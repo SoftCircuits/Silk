@@ -10,7 +10,7 @@ Finally, the runtime component executes a compiled program.
 
 The main power of this library is that it allows you to register your own functions and variables with the compiler and those functions and variables can be called from the Silk program. When one of your registered functions is called, the `Function` event is raised, allowing the host application to provide key functionality specific to the host application's domain.
 
-The Silk language itself is designed to be relatively easy to learn. It has no semicolons or other, excess punctuation, and the language is not case sensitive.
+The Silk language itself is designed to be relatively easy to learn. It has no semicolons or other excessive punctuation, and the language is not case sensitive.
 
 ## Also See:
 - [Using the Silk Library](docs/UsingLibrary.md)
