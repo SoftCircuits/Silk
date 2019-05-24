@@ -76,7 +76,7 @@ private static void Runtime_Function(object sender, FunctionEventArgs e)
     switch (e.Name)
     {
         case "Print":
-            Console.WriteLine(string.Join('\t', e.Parameters.Select(p => p.ToString())));
+            Console.WriteLine(string.Join("", e.Parameters.Select(p => p.ToString())));
             break;
         case "Color":
             Debug.Assert(e.Parameters.Length >= 1);
