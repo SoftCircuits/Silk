@@ -10,6 +10,8 @@ This is demonstrated in the following example.
 
 ```cs
 Compiler compiler = new Compiler();
+
+// Enable line numbers for runtime exceptions
 compiler.EnableLineNumbers = true;
 
 // Register intrinsic functions
@@ -24,10 +26,12 @@ foreach (var color in Enum.GetValues(typeof(ConsoleColor)))
 
 if (compiler.Compile(path, out CompiledProgram program))
 {
+    // Success
     Console.WriteLine("Compile succeeded.");
 }
 else
 {
+    // Failure: display compile errors
     Console.WriteLine("Compile failed.");
     Console.WriteLine();
     foreach (Error error in compiler.Errors)
