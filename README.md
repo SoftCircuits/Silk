@@ -1,5 +1,5 @@
 # Silk
-The Simple Interpreted Language Kit (SILK) was designed to make it easy to add scripting and automation to your .NET applications.
+The Simple Interpreted Language Kit (SILK) was designed to make it easy to add scripting and automation to your .NET applications. This document describes the basic us of the library.
 
 #### Also see:
 - [The Silk Language](docs/SilkLanguage.md)
@@ -7,11 +7,11 @@ The Simple Interpreted Language Kit (SILK) was designed to make it easy to add s
 
 ## Using the Library
 
-The Silk library is designed to be very simple to use. The first step is to create an instance of the `Compiler` class.
+The Silk library is designed to make it very easy to add scripting or automation to your .NET application. Once you have created a Silk script file (program), you need to compile it to bytecode so that it can be executed. The first step to compile a program is to create an instance of the `Compiler` class.
 
-The next step is the critical part. Use the `RegisterFunction` and `RegisterVariable` methods to add functions and variables, which will be available to the source code. This will give the language the ability to perform the tasks you choose specific to the domain of your application.
+In order to allow a program to do useful things with your host application, use the `Compiler.RegisterFunction()` and `Compiler.RegisterVariable()` methods to add functions and variables, which will be available to the Silk source code. This will give the language the ability to perform the tasks you choose specific to the domain of your application.
 
-Next, call the `Compile` method. If it returns `false`, the compile failed and you can use the `Errors` property to access the compile errors. Otherwise, the `Compile` method returns an instance of the `CompiledProgram` class.
+Next, call the `Compiler.Compile()` method. If it returns false, the compile failed and you can use the `Errors` property to access the compile errors. These errors include a description of each error along with the line number where the error occurred. If the compile succeeds, the `Compiler.Compile()` method returns true and creates an instance of the `CompiledProgram` class.
 
 This is demonstrated in the following example.
 
@@ -27,75 +27,75 @@ compiler.RegisterFunction("ReadKey", 0, 0);
 
 // Register intrinsic variables
 foreach (var color in Enum.GetValues(typeof(ConsoleColor)))
-  compiler.RegisterVariable(color.ToString(), new Variable((int)color));
+    compiler.RegisterVariable(color.ToString(), new Variable((int)color));
 
 if (compiler.Compile(path, out CompiledProgram program))
 {
-  Console.WriteLine("Compile succeeded.");
+    Console.WriteLine("Compile succeeded.");
 }
 else
 {
-  Console.WriteLine("Compile failed.");
-  Console.WriteLine();
-  foreach (Error error in compiler.Errors)
-    Console.WriteLine(error.ToString());
+    Console.WriteLine("Compile failed.");
+    Console.WriteLine();
+    foreach (Error error in compiler.Errors)
+        Console.WriteLine(error.ToString());
 }
 ```
 
-The `CompiledProgram` object contains the compiled code. You can use this class' `Save` and `Load` methods to save a compiled program to a file, and load a compiled program from a file. This allows you to load a previously compiled program and run it without needing to compile it each time.
+The `CompiledProgram` object contains the compiled code. You can use this class' `Save()` and `Load()` methods to save a compiled program to a file, and load a compiled program from a file. This allows you to load a previously compiled program and run it without needing to compile it each time.
 
-To run a `CompiledProgram`, create an instance of the `Runtime` class and pass the `CompiledProgram` to the `Execute` method. The `Runtime` class has three methods: `Begin`, `Function` and `End`.
+To run a `CompiledProgram`, create an instance of the `Runtime` class and pass the `CompiledProgram` to the `Runtime.Execute()` method.
 
-The `Begin` event is called when the program starts to run. The `BeginEventArgs` argument contains a property called `UserData`. You can use this property to store any contextual data in your application and this same object will be passed to the other `Runtime` events.
+The `Runtime` class exposes three events: `Begin`, `Function` and `End`. The `Begin` event is called when the program starts to run. The `BeginEventArgs` argument contains a property called `UserData`. You can use this property to store any contextual data in your application and this same object will be passed to the other `Runtime` events.
 
-The `Function` event is called when the program executes a call that you registered with `Compiler.RegisterFunction`. The `FunctionEventArgs` includes a Parameters` property, which is an array of arguments that were passed to the function. And it includes a `ReturnValue` property, which specifies the function's return value.
+The `Function` event is called when the program executes a call to a function that you registered with `Compiler.RegisterFunction()`. The `FunctionEventArgs` includes a `Parameters` property, which is an array of arguments that were passed to the function. And it includes a `ReturnValue` property, which specifies the function's return value.
 
 This is demonstrated by the following example.
 
 ```cs
 private void RunProgram(CompiledProgram program)
 {
-  Runtime runtime = new Runtime();
-  runtime.Begin += Runtime_Begin;
-  runtime.Function += Runtime_Function;
-  runtime.End += Runtime_End;
+    Runtime runtime = new Runtime();
+    runtime.Begin += Runtime_Begin;
+    runtime.Function += Runtime_Function;
+    runtime.End += Runtime_End;
 
-  Variable result = runtime.Execute(program);
+    Variable result = runtime.Execute(program);
 
-  Console.WriteLine();
-  Console.WriteLine($"Program ran successfully with exit code {result}.");
+    Console.WriteLine();
+    Console.WriteLine($"Program ran successfully with exit code {result}.");
 }
 
 private static void Runtime_Begin(object sender, BeginEventArgs e)
 {
-  e.UserData = this;
+    e.UserData = this;
 }
 
 private static void Runtime_Function(object sender, FunctionEventArgs e)
 {
-  switch (e.Name)
-  {
-    case "Print":
-      Console.WriteLine(string.Join('\t', e.Parameters.Select(p => p.ToString())));
-      break;
-    case "Color":
-      Debug.Assert(e.Parameters.Length >= 1);
-      Debug.Assert(e.Parameters.Length <= 2);
-      if (e.Parameters.Length >= 1)
-        Console.ForegroundColor = (ConsoleColor)e.Parameters[0].ToInteger();
-      if (e.Parameters.Length >= 2)
-        Console.BackgroundColor = (ConsoleColor)e.Parameters[1].ToInteger();
-      break;
-    case "ClearScreen":
-      Console.Clear();
-      break;
-    case "ReadKey":
-      e.ReturnValue.SetValue(Console.ReadKey().KeyChar);
-      break;
-    default:
-      Debug.Assert(false);
-      break;
-  }
+    switch (e.Name)
+    {
+        case "Print":
+            Console.WriteLine(string.Join('\t', e.Parameters.Select(p => p.ToString())));
+            break;
+        case "Color":
+            Debug.Assert(e.Parameters.Length >= 1);
+            Debug.Assert(e.Parameters.Length <= 2);
+            if (e.Parameters.Length >= 1)
+                Console.ForegroundColor = (ConsoleColor)e.Parameters[0].ToInteger();
+            if (e.Parameters.Length >= 2)
+                Console.BackgroundColor = (ConsoleColor)e.Parameters[1].ToInteger();
+            break;
+        case "ClearScreen":
+            Console.Clear();
+            break;
+        case "ReadKey":
+            e.ReturnValue.SetValue(Console.ReadKey().KeyChar);
+            break;
+        default:
+            Debug.Assert(false);
+            break;
+    }
 }
 
 private static void Runtime_End(object sender, EndEventArgs e)
