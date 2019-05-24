@@ -12,7 +12,7 @@ The main power of this library is that it allows you to register your own functi
 
 The Silk language itself is designed to be relatively easy to learn. It has no semicolons or other, excess punctuation, and the language is not case sensitive.
 
-## Also see:
+## Also See:
 - [Using the Library](docs/UsingLibrary.md)
 - [The Silk Language](docs/SilkLanguage.md)
 - [Internal Functions and Variables](docs/InternalFunctions.md)
