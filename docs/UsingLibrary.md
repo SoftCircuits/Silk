@@ -1,4 +1,4 @@
-# Silk
+# Using the Silk Library
 
 The Silk library was designed to be as easy as possible to use. Once you have a Silk source code file (program), you need to compile it to bytecode so that it can be executed. The first step to compile a program is to create an instance of the `Compiler` class.
 
