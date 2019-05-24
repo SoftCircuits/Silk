@@ -46,7 +46,7 @@ The `Function` event is called when the program executes a call to a function th
 This is demonstrated by the following example.
 
 ```cs
-private void RunProgram(CompiledProgram program)
+private static void RunProgram(CompiledProgram program)
 {
     Runtime runtime = new Runtime();
     runtime.Begin += Runtime_Begin;
@@ -93,5 +93,50 @@ private static void Runtime_Function(object sender, FunctionEventArgs e)
 
 private static void Runtime_End(object sender, EndEventArgs e)
 {
+}
+```
+
+If you define a lot of functions, you may find the large `switch` statement cumbersome. Here another way to implement your function handlers.
+
+```cs
+private static Dictionary<string, Action<Variable[], Variable>> FunctionLookup = new Dictionary<string, Action<Variable[], Variable>>
+{
+    ["Print"] = Print,
+    ["Color"] = Color,
+    ["ClearScreen"] = ClearScreen,
+    ["ReadKey"] = ReadKey,
+};
+
+private static void Runtime_Function(object sender, FunctionEventArgs e)
+{
+    if (FunctionLookup.TryGetValue(e.Name, out Action<Variable[], Variable> action))
+        action(e.Parameters, e.ReturnValue);
+    else
+        Debug.Assert(false);    // Unknown function
+}
+
+private static void Print(Variable[] parameters, Variable returnValue)
+{
+    Console.WriteLine(string.Join("", parameters.Select(p => p.ToString())));
+}
+
+private static void Color(Variable[] parameters, Variable returnValue)
+{
+    Debug.Assert(parameters.Length >= 1);
+    Debug.Assert(parameters.Length <= 2);
+    if (parameters.Length >= 1)
+        Console.ForegroundColor = (ConsoleColor)parameters[0].ToInteger();
+    if (parameters.Length >= 2)
+        Console.BackgroundColor = (ConsoleColor)parameters[1].ToInteger();
+}
+
+private static void ClearScreen(Variable[] parameters, Variable returnValue)
+{
+    Console.Clear();
+}
+
+private static void ReadKey(Variable[] parameters, Variable returnValue)
+{
+    returnValue.SetValue(Console.ReadKey().KeyChar);
 }
 ```
