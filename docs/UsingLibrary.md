@@ -96,7 +96,7 @@ private static void Runtime_End(object sender, EndEventArgs e)
 }
 ```
 
-If you define a lot of functions, you may find the large `switch` statement cumbersome. Here another way to implement your function handlers.
+If you define a lot of functions, you may find the large `switch` statement cumbersome. Here is an example of using the `Dictionary` class to create a handler lookup table. This way, each of your function handlers can be a separate method.
 
 ```cs
 private static Dictionary<string, Action<Variable[], Variable>> FunctionLookup = new Dictionary<string, Action<Variable[], Variable>>
