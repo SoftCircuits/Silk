@@ -4,7 +4,7 @@ The Silk library makes no assumptions about the host application's domain or pla
 
 That said, the library does provide provide some internal functions and variables. These are added by default when a Silk program is compiled. (You can disable this by setting the `Compiler.EnableInternalFunctions` property to false.) This page documents those internal functions and variables.
 
-Note that when your application adds functions or variables (using `Compiler.RegisterFunction` or `Compiler.RegisterVariable`), you can override the internal ones by adding functions and variables with the same name.
+Note that when your application adds functions or variables (using `Compiler.RegisterFunction` or `Compiler.RegisterVariable`), you can override the internal ones by adding functions or variables with the same name as the internal ones.
 
 ## Functions
 
