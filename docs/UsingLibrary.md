@@ -1,11 +1,4 @@
 # Silk
-The Simple Interpreted Language Kit (SILK) was designed to make it easy to add scripting and automation to your .NET applications. This document describes the basic use of the library.
-
-#### Also see:
-- [The Silk Language](docs/SilkLanguage.md)
-- [Internal Functions and Variables](docs/InternalFunctions.md)
-
-## Using the Library
 
 The Silk library is designed to make it very easy to add scripting or automation to your .NET application. Once you have created a Silk script file (program), you need to compile it to bytecode so that it can be executed. The first step to compile a program is to create an instance of the `Compiler` class.
 
