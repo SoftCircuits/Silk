@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Compiler\BlockContext.cs" />
+    <Compile Remove="Compiler\CompilerExpressions.cs" />
+    <Compile Remove="Compiler\CompilerKeywords.cs" />
+    <Compile Remove="OLD-Variable.cs" />
+    <Compile Remove="Program.cs" />
+    <Compile Remove="Runtime\FunctionContext.cs" />
+    <Compile Remove="Variable\OLD-Variable.cs" />
+  </ItemGroup>
+
+</Project>
