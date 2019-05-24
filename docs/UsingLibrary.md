@@ -41,7 +41,7 @@ To run a `CompiledProgram`, create an instance of the `Runtime` class and pass t
 
 The `Runtime` class exposes three events: `Begin`, `Function` and `End`. The `Begin` event is called when the program starts to run. The `BeginEventArgs` argument contains a property called `UserData`. You can use this property to store any contextual data in your application and this same object will be passed to the other `Runtime` events.
 
-The `Function` event is called when the program executes a call to a function that you registered with `Compiler.RegisterFunction()`. The `FunctionEventArgs` includes a `Name` property that contains the name of the function. Note that while the language is not case-sensitive, the name of the function will always have the same case as the name you passed to `Compiler.RegisterFunction()`. It also includes a `Parameters` property, which is an array of arguments that were passed to the function. And it also includes a `ReturnValue` property, which specifies the function's return value.
+The `Function` event is called when the program executes a call to a function that you registered with `Compiler.RegisterFunction()`. The `FunctionEventArgs` includes a `Name` property that contains the name of the function. Note that while the language is not case-sensitive, the name of the function passed to the `Function` event handler will always have the same case as the name you passed to `Compiler.RegisterFunction()`. It also includes a `Parameters` property, which is an array of arguments that were passed to the function. And it also includes a `ReturnValue` property, which specifies the function's return value.
 
 This is demonstrated by the following example.
 
