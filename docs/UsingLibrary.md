@@ -1,6 +1,6 @@
 # Silk
 
-The Silk library is designed to make it very easy to add scripting or automation to your .NET application. Once you have created a Silk script file (program), you need to compile it to bytecode so that it can be executed. The first step to compile a program is to create an instance of the `Compiler` class.
+The Silk library was designed to be as easy as possible to use. Once you have a Silk source code file (program), you need to compile it to bytecode so that it can be executed. The first step to compile a program is to create an instance of the `Compiler` class.
 
 In order to allow a program to do useful things with your host application, use the `Compiler.RegisterFunction()` and `Compiler.RegisterVariable()` methods to add functions and variables, which will be available to the Silk source code. This will give the language the ability to perform the tasks you choose specific to the domain of your application.
 
