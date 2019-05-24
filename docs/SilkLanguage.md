@@ -147,7 +147,7 @@ A multiline comment starts with a forward slash and asterisk (`/*`) and ends wit
 
 The Silk language supports a number of standard language structures.
 
-#### if
+#### If
 
 The `if` keyword allows you to conditionally execute a block of code. The following line is executed only if the `if` condition is true. If the `if` statement is followed by a pair of curly braces, all statements within the curly braces are executed only if the condition is true. (The curly braces are optional if they contain only one statement.)
 
@@ -213,7 +213,6 @@ Silk supports the following operators.
 | - | Subtraction, unary negative |
 | * | Multiplication |
 | / | Division |
-| // | Line comment |
 | ^ | Raise to power |
 | % | Modulus |
 | & | Concatenation |
@@ -226,6 +225,7 @@ Silk supports the following operators.
 | Or | Logical and bitwise OR |
 | Xor | Logical and bitwise XOR |
 | Not | Logical and bitwise NOT |
+| // | Line comment |
 | /* | Multiline comment start |
 | */ | Multiline commend end |
 
