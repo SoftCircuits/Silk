@@ -1,5 +1,5 @@
 # Silk
-The Simple Interpreted Language Kit (SILK) was designed to make it easy to add scripting and automation to your .NET applications. This document describes the basic us of the library.
+The Simple Interpreted Language Kit (SILK) was designed to make it easy to add scripting and automation to your .NET applications. This document describes the basic use of the library.
 
 #### Also see:
 - [The Silk Language](docs/SilkLanguage.md)
