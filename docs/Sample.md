@@ -5,7 +5,7 @@ Below is a sample Silk source file. It makes the following assumptions about the
 - It has registered an intrinsic function called `Color`, which sets the foreground color and, optionally (if two arguments are passed), the background color.
 - It has registered intrinsic variables with all the standard colors (Black, Blue, White, etc.).
 - It has registered an intrinsic function called `ClearScreen`, which clears the console window.
-- It has registered an intrinsic function called `PrintLn`, which prints all the arguments to the console window, following by a new line.
+- It has registered an intrinsic function called `PrintLn`, which prints all the arguments to the console window, followed by a new line.
 - It has registered an intrinsic function called `Print`, which prints all the arguments to the console window (no new line).
 - It has not disabled the internal functions.
 
