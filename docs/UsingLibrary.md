@@ -2,7 +2,7 @@
 
 The Silk library was designed to be as easy as possible to use. Once you have a Silk source code file (program), you need to compile it to bytecode so that it can be executed. The first step to compile a program is to create an instance of the `Compiler` class.
 
-In order to allow a program to do useful things with your host application, use the `Compiler.RegisterFunction()` and `Compiler.RegisterVariable()` methods to add functions and variables, which will be available to the Silk source code. This will give the language the ability to perform the tasks you choose specific to the domain of your application.
+In order to allow a program to do useful things with your host application, use the `Compiler.RegisterFunction()` and `Compiler.RegisterVariable()` methods to add your own functions and variables, which will be available to the Silk source code. This will give the language the ability to perform the tasks you provide that are specific to the host application's domain.
 
 Next, call the `Compiler.Compile()` method. If it returns false, the compile failed and you can use the `Errors` property to access the compile errors. These errors include a description of each error along with the line number where the error occurred. If the compile succeeds, the `Compiler.Compile()` method returns true and creates an instance of the `CompiledProgram` class.
 
