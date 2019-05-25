@@ -22,9 +22,9 @@ main()
 }
 ```
 
-Execution will return to the previous function when the closing curly brace is reached. When the main function returns, the program terminates. In addition, the `return` keyword can be used to return at any point within the function. The return keyword can optionally be followed by any valid expression. In this case, the expression will be evaluated and the result will be returned by the function.
+Execution will return to the previous function when the closing curly brace is reached. When the main function returns, the program terminates. In addition, the `return` keyword can be used to return at any point within the function. The return keyword can optionally be followed by any valid expression. In this case, the expression will be evaluated and the result will be returned by the function. Note that `Runtime.Execute()` will return the value returned by `main()`.
 
-When calling a function with no arguments, you can simply enter the function name.
+When calling a function with no arguments, you can simply enter the function name. This is demonstrated in the following example, which assumes the host application has registered a function called `print()`.
 
 ```cs
 main()
@@ -33,16 +33,16 @@ main()
 }
 ```
 
-To pass arguments, the function name should be followed by the argument values. Multiple arguments should be separated by commas. This is demonstrated in the following example, which assumes the host application has registered a function called `print()`.
+To pass arguments, the function name should be followed by the argument values. Multiple arguments should be separated by commas.
 
 ```cs
 main()
 {
-    print "Hello, world!"
+    print "Hello world!", 50
 }
 ```
 
-In order to use the return value from a function (for example, as part of an expression), the function name must be followed by open and closing parentheses. Any arguments to that function should appear within those parentheses.
+When using the result from a function, (for example, when using a function as part of an expression), the function name must be followed by open and closing parentheses. Any arguments to that function should appear within those parentheses.
 
 The following example declares a function named `main()`, and another function named `double()`. The `main()` function calls `double()`, which takes a single argument and multiplies the argument by 2. When the result is returned to `main()`, it is assigned to the variable `i`. The result in this case is that the variable `i` would have the value 4.
 
@@ -162,7 +162,7 @@ As when intializing other global variables, the values must be literals (no vari
 
 ## Code
 
-No more than one statement per line.
+There are no semicolons at the end of each. In general, no more than one statement is allowed per line.
 
 ## Comments
 
@@ -269,4 +269,4 @@ Silk supports the following operators.
 | /* | Multiline comment start |
 | */ | Multiline commend end |
 
-Like some earlier versions of the BASIC language, the logical operators (`And`, `Or`, `Xor`, and `Not`) are bitwise operations. But they also work for logical operations. A Silk expression that evaluates logically to true returns -1 (all bits set), but any non-zero value is considered to be true. And so the same operators are used for both logical and bitwise operations.
+Note that, like some earlier versions of the BASIC language, the logical operators (`And`, `Or`, `Xor`, and `Not`) do bitwise operations. But they also work for logical operations. A Silk expression that evaluates logically to true returns -1 (all bits set), although any non-zero value is considered to be true. And so Silk does not provide separate logical and bitwise operators.
