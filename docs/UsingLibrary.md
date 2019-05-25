@@ -133,6 +133,8 @@ private static void Runtime_Function(object sender, FunctionEventArgs e)
         Debug.Assert(false);    // Unknown function
 }
 
+#region Intrinsic Functions
+
 private static void Print(Variable[] parameters, Variable returnValue)
 {
     Console.WriteLine(string.Join("", parameters.Select(p => p.ToString())));
@@ -157,4 +159,6 @@ private static void ReadKey(Variable[] parameters, Variable returnValue)
 {
     returnValue.SetValue(Console.ReadKey().KeyChar);
 }
+
+#endregion
 ```
