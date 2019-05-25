@@ -114,6 +114,8 @@ doSomething()
 }
 ```
 
+Note that global variables are not initialized at runtime. Instead, the compiler stores the value of global variables with the `CompiledProgram` and the global variables are already initialized when the runtime loads the program. Contrast this to local variables, which are always initialized at runtime.
+
 ## Lists (Arrays)
 
 Silk also supports lists. There are two ways to create a list. The first way is using square brackets to specify the size of the list.
