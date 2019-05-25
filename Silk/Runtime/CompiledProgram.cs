@@ -70,7 +70,7 @@ namespace Silk
 
         /// <summary>
         /// Saves the current compiled program to the specified file. Throws an exception
-        /// if there is current no compiled program loaded.
+        /// if there is currently no compiled program loaded.
         /// </summary>
         /// <remarks>
         /// Unlike functions, we just write any intrinsic variables to the file even if

@@ -18,7 +18,7 @@ namespace Silk
         private static readonly Dictionary<Keyword, Action<Compiler, Token>> KeywordParserLookup = new Dictionary<Keyword, Action<Compiler, Token>>
         {
             [Keyword.Var] = (x, t) => x.ParseVar(t),
-            [Keyword.Goto] = (x, t) => x.ParseGoTo(t),
+            [Keyword.GoTo] = (x, t) => x.ParseGoTo(t),
             [Keyword.If] = (x, t) => x.ParseIf(t),
             [Keyword.While] = (x, t) => x.ParseWhile(t),
             [Keyword.For] = (x, t) => x.ParseFor(t),

@@ -14,7 +14,7 @@ namespace Silk
     {
         NullKeyword,    // Not a keyword
         Var,
-        Goto,
+        GoTo,
         Return,
         If,
         Else,
@@ -37,7 +37,7 @@ namespace Silk
         private static readonly Dictionary<string, Keyword> KeywordLookup = new Dictionary<string, Keyword>(StringComparer.OrdinalIgnoreCase)
         {
             ["var"] = Keyword.Var,
-            ["goto"] = Keyword.Goto,
+            ["goto"] = Keyword.GoTo,
             ["return"] = Keyword.Return,
             ["if"] = Keyword.If,
             ["else"] = Keyword.Else,
