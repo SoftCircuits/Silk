@@ -1,104 +1,21 @@
-# Silk
-The Simple Interpreted Language Kit (SILK) was designed to make it easy to add scripting and automation to your .NET applications.
+# Silk Overview
 
-#### Also see:
+The Simple Interpreted Language Kit (SILK) is a .NET class library that makes it easy to add scripting and automation to your .NET applications.
+
+The library includes three main components. A compiler, a compiled program, and a runtime. The compiler compiles the Silk source code to bytecode. This allows faster execution and also catches all source code syntax errors before running the Silk program.
+
+The compiler produces a compiled program. A compiled program can be saved to a file, and later read from a file. This allows you to load and run a Silk program without recompiling it each time.
+
+Finally, the runtime component executes a compiled program.
+
+The main power of this library is that it allows you to register your own functions and variables with the compiler and those functions and variables can be called from the Silk program. When one of your registered functions is called, the `Function` event is raised, allowing the host application to provide key functionality specific to the host application's domain.
+
+The Silk language itself is designed to be relatively easy to learn. It has no semicolons or other excessive punctuation, and the language is not case sensitive.
+
+This project includes both the class library (Silk), and a test project/solution (TestSilk). If you download everything and run it, it will run the TestSilk application. You just need the class library to include Silk in your own projects.
+
+## See Also:
+- [Using the Silk Library](docs/UsingLibrary.md)
 - [The Silk Language](docs/SilkLanguage.md)
 - [Internal Functions and Variables](docs/InternalFunctions.md)
-
-## Using the Library
-
-The Silk library is designed to be very simple to use. The first step is to create an instance of the `Compiler` class.
-
-The next step is the critical part. Use the `RegisterFunction` and `RegisterVariable` methods to add functions and variables, which will be available to the source code. This will give the language the ability to perform the tasks you choose specific to the domain of your application.
-
-Next, call the `Compile` method. If it returns `false`, the compile failed and you can use the `Errors` property to access the compile errors. Otherwise, the `Compile` method returns an instance of the `CompiledProgram` class.
-
-This is demonstrated in the following example.
-
-```cs
-Compiler compiler = new Compiler();
-compiler.EnableLineNumbers = true;
-
-// Register intrinsic functions
-compiler.RegisterFunction("Print", 0, Function.NoParameterLimit);
-compiler.RegisterFunction("Color", 1, 2);
-compiler.RegisterFunction("ClearScreen", 0, 0);
-compiler.RegisterFunction("ReadKey", 0, 0);
-
-// Register intrinsic variables
-foreach (var color in Enum.GetValues(typeof(ConsoleColor)))
-  compiler.RegisterVariable(color.ToString(), new Variable((int)color));
-
-if (compiler.Compile(path, out CompiledProgram program))
-{
-  Console.WriteLine("Compile succeeded.");
-}
-else
-{
-  Console.WriteLine("Compile failed.");
-  Console.WriteLine();
-  foreach (Error error in compiler.Errors)
-    Console.WriteLine(error.ToString());
-}
-```
-
-The `CompiledProgram` object contains the compiled code. You can use this class' `Save` and `Load` methods to save a compiled program to a file, and load a compiled program from a file. This allows you to load a previously compiled program and run it without needing to compile it each time.
-
-To run a `CompiledProgram`, create an instance of the `Runtime` class and pass the `CompiledProgram` to the `Execute` method. The `Runtime` class has three methods: `Begin`, `Function` and `End`.
-
-The `Begin` event is called when the program starts to run. The `BeginEventArgs` argument contains a property called `UserData`. You can use this property to store any contextual data in your application and this same object will be passed to the other `Runtime` events.
-
-The `Function` event is called when the program executes a call that you registered with `Compiler.RegisterFunction`. The `FunctionEventArgs` includes a Parameters` property, which is an array of arguments that were passed to the function. And it includes a `ReturnValue` property, which specifies the function's return value.
-
-This is demonstrated by the following example.
-
-```cs
-private void RunProgram(CompiledProgram program)
-{
-  Runtime runtime = new Runtime();
-  runtime.Begin += Runtime_Begin;
-  runtime.Function += Runtime_Function;
-  runtime.End += Runtime_End;
-
-  Variable result = runtime.Execute(program);
-
-  Console.WriteLine();
-  Console.WriteLine($"Program ran successfully with exit code {result}.");
-}
-
-private static void Runtime_Begin(object sender, BeginEventArgs e)
-{
-  e.UserData = this;
-}
-
-private static void Runtime_Function(object sender, FunctionEventArgs e)
-{
-  switch (e.Name)
-  {
-    case "Print":
-      Console.WriteLine(string.Join('\t', e.Parameters.Select(p => p.ToString())));
-      break;
-    case "Color":
-      Debug.Assert(e.Parameters.Length >= 1);
-      Debug.Assert(e.Parameters.Length <= 2);
-      if (e.Parameters.Length >= 1)
-        Console.ForegroundColor = (ConsoleColor)e.Parameters[0].ToInteger();
-      if (e.Parameters.Length >= 2)
-        Console.BackgroundColor = (ConsoleColor)e.Parameters[1].ToInteger();
-      break;
-    case "ClearScreen":
-      Console.Clear();
-      break;
-    case "ReadKey":
-      e.ReturnValue.SetValue(Console.ReadKey().KeyChar);
-      break;
-    default:
-      Debug.Assert(false);
-      break;
-  }
-}
-
-private static void Runtime_End(object sender, EndEventArgs e)
-{
-}
-```
+- [Sample Source Code](docs/Sample.md)
