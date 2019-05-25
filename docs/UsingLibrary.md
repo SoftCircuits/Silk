@@ -45,7 +45,7 @@ else
 
 ## CompiledProgram Class
 
-As you likely guessed, the `CompiledProgram` object created by `Compiler.Compile()` contains the compiled code.
+As the name implies, the `CompiledProgram` object created by `Compiler.Compile()` contains the compiled code.
 
 You can use this class' `Save()` and `Load()` methods to save a compiled program to a file, and load a compiled program from a file. This allows you to load a previously compiled program and run it without needing to compile it each time.
 
@@ -110,7 +110,7 @@ private static void Runtime_End(object sender, EndEventArgs e)
 }
 ```
 
-Note that the `Variable` returns from `Runtime.Execute()` contains the value returned from the program's `main()` function.
+Note that the `Variable` returned from `Runtime.Execute()` contains the value returned from the program's `main()` function.
 
 ## Tip if you have Many Functions
 
