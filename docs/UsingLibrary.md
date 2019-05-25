@@ -1,6 +1,10 @@
 # Using the Silk Library
 
-The Silk library was designed to be as easy as possible to use. Once you have a Silk source code file (program), you need to compile it to bytecode so that it can be executed. The first step to compile a program is to create an instance of the `Compiler` class.
+The Silk library was designed to be as easy as possible to use. Once you have a Silk source code file (program), you need to compile it to bytecode so that it can be executed.
+
+## Compiler Class
+
+The first step to compile a program is to create an instance of the `Compiler` class.
 
 In order to allow a program to do useful things with your host application, use the `Compiler.RegisterFunction()` and `Compiler.RegisterVariable()` methods to add your own functions and variables, which will be available to the Silk source code. This will give the language the ability to perform the tasks you provide that are specific to the host application's domain.
 
@@ -39,7 +43,11 @@ else
 }
 ```
 
-The `CompiledProgram` object contains the compiled code. You can use this class' `Save()` and `Load()` methods to save a compiled program to a file, and load a compiled program from a file. This allows you to load a previously compiled program and run it without needing to compile it each time.
+## CompiledProgram Class
+
+The `CompiledProgram` object created by `Compiler.Compile()` contains the compiled code. You can use this class' `Save()` and `Load()` methods to save a compiled program to a file, and load a compiled program from a file. This allows you to load a previously compiled program and run it without needing to compile it each time.
+
+## Runtime Class
 
 To run a `CompiledProgram`, create an instance of the `Runtime` class and pass the `CompiledProgram` to the `Runtime.Execute()` method.
 
@@ -99,6 +107,8 @@ private static void Runtime_End(object sender, EndEventArgs e)
 {
 }
 ```
+
+## Tip if you have Many Functions
 
 If you define a lot of functions, you may find the large `switch` statement cumbersome. Here is an example of using the `Dictionary` class to create a handler lookup table. This way, each of your function handlers can be a separate method.
 
