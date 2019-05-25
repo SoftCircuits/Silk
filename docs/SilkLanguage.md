@@ -162,7 +162,9 @@ As when intializing other global variables, the values must be literals (no vari
 
 ## Code
 
-There are no semicolons at the end of each. In general, no more than one statement is allowed per line.
+Although the Silk language is C-like, there are a number of differences, primarily in an attempt to simplify the language. Silk has no semicolons at the end of each line. And in general only one statement is allowed per line.
+
+Parentheses are not required around logical expressions in `if`, `while` and `for` clauses. Also, parentheses are not required when calling a function unless the return value of the function is being used.
 
 ## Comments
 
