@@ -132,7 +132,7 @@ The second approach uses curly braces to initialize the value of each variable i
 ```cs
 main()
 {
-    a = { "abc", 27, "def", 50, 1.5. [5], { 1, 2, 3 } }
+    a = { "abc", 27, "def", 50, 1.5, [5], { 1, 2, 3 } }
 }
 ```
 
