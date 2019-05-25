@@ -14,7 +14,7 @@ The Silk language itself is designed to be relatively easy to learn. It has no s
 
 This project includes both the class library (Silk), and a test project/solution (TestSilk). If you download everything and run it, it will run the TestSilk application. You just need the class library to include Silk in your own projects.
 
-## Also See:
+## See Also:
 - [Using the Silk Library](docs/UsingLibrary.md)
 - [The Silk Language](docs/SilkLanguage.md)
 - [Internal Functions and Variables](docs/InternalFunctions.md)
