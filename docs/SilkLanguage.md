@@ -27,13 +27,19 @@ Execution will return to the previous function when the closing curly brace is r
 When calling a function with no arguments, you can simply enter the function name.
 
 ```cs
-print
+main()
+{
+    print
+}
 ```
 
 To pass arguments, the function name should be followed by the argument values. Multiple arguments should be separated by commas. This is demonstrated in the following example, which assumes the host application has registered a function called `print()`.
 
 ```cs
-print "Hello, world!"
+main()
+{
+    print "Hello, world!"
+}
 ```
 
 In order to use the return value from a function (for example, as part of an expression), the function name must be followed by open and closing parentheses. Any arguments to that function should appear within those parentheses.
@@ -59,7 +65,10 @@ A variable is an identifer that represents a value. Variables can be declared a 
 Within a function, you can declare a variable simply by assigning a value to an identifier. The following example declares a variable named `i` and gives it a value of 5.
 
 ```cs
-i = 5
+main()
+{
+    i = 5
+}
 ```
 
 Optionally, you can preceed the identifier with the var keyword. When you use the var keyword, assigning a value to the variable is optional. When you don't assign a value, the variable will have the default value of 0. So the following two examples would produce the same result.
@@ -67,13 +76,19 @@ Optionally, you can preceed the identifier with the var keyword. When you use th
 Example 1:
 
 ```cs
-var i
+main()
+{
+    var i
+}
 ```
 
 Example 2:
 
 ```cs
-i = 0
+main()
+{
+    i = 0
+}
 ```
 
 The variables described above are local to the function where they are declared. This means that if you declare a variable with the same name in two different functions, they will be independent and contain completely separate values.
@@ -104,7 +119,10 @@ doSomething()
 Silk also supports lists. There are two ways to create a list. The first way is using square brackets to specify the size of the list.
 
 ```cs
-a = [10]
+main()
+{
+    a = [10]
+}
 ```
 
 The example above creates a list with 10 variables. It does not initialize the values of those variables, and so they all have the default value of 0.
@@ -112,22 +130,35 @@ The example above creates a list with 10 variables. It does not initialize the v
 The second approach uses curly braces to initialize the value of each variable in the list.
 
 ```cs
-a = { "abc", 27, "def", 50, 1.5. [5], { 1, 2, 3 } }
+main()
+{
+    a = { "abc", 27, "def", 50, 1.5. [5], { 1, 2, 3 } }
+}
 ```
 
 The example above creates a list with seven variables and initializes the value of each variable. As you can see, each variable can be initialized to any type of value, including other lists.
 
 You can use square brackets to access variables in a list. The number within the square brackets specifies the *1-based* list index. So the following example would assign a value to the first variable in the list.
 
-a[1] = 25
+```cs
+main()
+{
+    a[1] = 25
+}
+```
 
 And the next example reads the variable at the fifth position within the list, and assigns it to a variable called `i`.
 
-i = a[5]
+```cs
+main()
+{
+    i = a[5]
+}
+```
 
 As with other variables, global lists can be created using the `var` keyword before any functions are defined.
 
-As when intializing other variables, the values must be literals (no variables or function return values). If a list is initialized within a function, default values can include expressions, variables and function return values.
+As when intializing other global variables, the values must be literals (no variables or function return values). If a list is initialized within a function, default values can include expressions, variables and function return values.
 
 ## Code
 
@@ -154,12 +185,15 @@ The `if` keyword allows you to conditionally execute a block of code. The follow
 An `if` block can be followed by an `else` block. The code in the `else` block is only executed if the `if` condition was false. In addition, the `else` keyword can be followed by another `if` expression. In this case, the code in the `else` block will only be executed if the original `if` condition was false and the new `if` condition is true. You can have any number of `else if` sections. There can be no more than one `else` without `if` section, and it must always come last.
 
 ```cs
-if i > 5
-    print "i is greater than 5"
-else
+main()
 {
-    print "i is not greater than 5"
-    return
+    if i > 5
+        print "i is greater than 5"
+    else
+    {
+        print "i is not greater than 5"
+        return
+    }
 }
 ```
 #### GoTo
@@ -183,10 +217,13 @@ A while loop executes a block of code as long as a condition is true. The curly 
 The following example loops as long as the variable `i` is less then 50. Please note the line that adds 1 to `i`. If this line was removed, the loop would repeat forever. Be careful when using the `while` statement to ensure that it will eventually terminate.
 
 ```cs
-while i < 50
+main()
 {
-    print i
-    i = i + 1
+    while i < 50
+    {
+        print i
+        i = i + 1
+    }
 }
 ```
 
@@ -197,9 +234,12 @@ The `for` loop executes a block of code similar to a `for` loop. The curly brace
 The `for` loop requires a variable. By default, the variable will be incremented by 1 each time after executing the loop. You can override this using the optional `step` keyword. If the `step` keyword is used, it can be followed by any positive or negative number (integer or fractional). However, the `step` value must be a literal (it cannot include expressions, variables or function return values).
 
 ```cs
-for i = 100 to 1 step -1
+main()
 {
-    print i
+    for i = 100 to 1 step -1
+    {
+        print i
+    }
 }
 ```
 
