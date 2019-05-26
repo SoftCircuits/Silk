@@ -191,11 +191,11 @@ An `if` block can be followed by an `else` block. The code in the `else` block i
 ```cs
 main()
 {
-    if i > 5
-        print "i is greater than 5"
+    if i >= 5 and i <= 10
+        print "i is between 5 and 10 (inclusive)"
     else
     {
-        print "i is not greater than 5"
+        print "i is not between 5 and 19"
         return
     }
 }
