@@ -189,6 +189,12 @@ namespace Silk
         public int ListCount => Value.ListCount;
 
         /// <summary>
+        /// Gets the variable at the specified position of a list.
+        /// </summary>
+        /// <param name="index">1-based list position.</param>
+        public Variable GetAt(int index) => Value.GetAt(index);
+
+        /// <summary>
         /// Returns the items from this variable's list. Returns a single item if
         /// this variable does not contain a list.
         /// </summary>
@@ -252,8 +258,6 @@ namespace Silk
         public Variable Concat(double value) => Value.Concat(value);
 
         public Variable Negate() => Value.Negate();
-
-        public Variable GetAt(int index) => IsList ? Value.GetAt(index) : this;
 
         #endregion
 
