@@ -260,11 +260,12 @@ Silk supports the following operators.
 | ^ | Raise to power |
 | % | Modulus |
 | & | Concatenation |
-| = | Equals, assignment |
+| = | Equal, assignment |
+| <> | Not equal |
 | < | Less than |
-| <= | Less than or equal to |
+| <= | Less than or equal |
 | > | Greater than |
-| >= | Greater than or equal to |
+| >= | Greater than or equal |
 | And | Logical and bitwise AND |
 | Or | Logical and bitwise OR |
 | Xor | Logical and bitwise XOR |
