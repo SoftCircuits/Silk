@@ -261,7 +261,7 @@ Silk supports the following operators.
 | % | Modulus |
 | & | Concatenation |
 | = | Equal, assignment |
-[ <> | Not equal |
+| <> | Not equal |
 | < | Less than |
 | <= | Less than or equal to |
 | > | Greater than |
