@@ -192,10 +192,10 @@ An `if` block can be followed by an `else` block. The code in the `else` block i
 main()
 {
     if i >= 5 and i <= 10
-        print "i is between 5 and 10 (inclusive)"
+        print "i is between 5 and 10"
     else
     {
-        print "i is not between 5 and 19"
+        print "i is not between 5 and 10"
         return
     }
 }
