@@ -116,7 +116,6 @@ namespace Silk
 
             //
             LastTokenLine = CurrentLine;
-            //LastTokenColumn = CurrentColumn;
 
             // Test for end of input text
             if (LexHelper.EndOfText)

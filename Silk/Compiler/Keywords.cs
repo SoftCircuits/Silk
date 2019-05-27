@@ -96,15 +96,12 @@ namespace Silk
         }
 
         /// <summary>
-        /// Tests if a name string is made up entirely of valid symbol
-        /// characters. Tests if it's a keyword, symbol operator or equal
-        /// to "main".
+        /// Tests if a name string is a keyword or equal to "main".
         /// </summary>
         public static bool IsReservedSymbol(string name)
         {
             Debug.Assert(IsValidSymbolName(name));
             return IsKeyword(name) ||
-                LexicalAnalyzer.SymbolOperatorLookup.ContainsKey(name) ||
                 (name.Equals(Function.Main, StringComparison.OrdinalIgnoreCase));
         }
     }
