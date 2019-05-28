@@ -32,14 +32,14 @@ namespace Silk
 
         public override ValueType Type => ValueType.List;
         public override int ListCount => Value.Count;
-        public override Variable GetAt(int index) => IsValidIndex(index) ? Value[index] : new Variable();
         public override IEnumerable<Variable> GetList() => Value;
         public override string ToString() => string.Format("{{ {0} }}", string.Join(", ", Value));
         public override int ToInteger() => IsValidIndex(0) ? Value[0].ToInteger() : 0;
         public override double ToFloat() => IsValidIndex(0) ? Value[0].ToFloat() : 0.0;
         public override int GetHashCode() => HashCode.Combine(Type, Value);
 
-        private bool IsValidIndex(int index) => index >= 0 && index < Value.Count;
+        public Variable GetAt(int index) => IsValidIndex(index) ? Value[index] : new Variable();
+        public bool IsValidIndex(int index) => index >= 0 && index < Value.Count;
 
         #region Operations
 

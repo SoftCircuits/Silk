@@ -21,7 +21,6 @@ namespace Silk
     {
         public abstract ValueType Type { get; }
         public virtual int ListCount => 1;
-        public virtual Variable GetAt(int index) => (index == 0) ? new Variable(this) : new Variable();
         public virtual IEnumerable<Variable> GetList() => Enumerable.Empty<Variable>();
         public abstract int ToInteger();
         public abstract double ToFloat();

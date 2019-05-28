@@ -191,8 +191,8 @@ namespace Silk
         /// <summary>
         /// Gets the variable at the specified position of a list.
         /// </summary>
-        /// <param name="index">1-based list position.</param>
-        public Variable GetAt(int index) => Value.GetAt(index);
+        /// <param name="index">0-based list position.</param>
+        public Variable GetAt(int index) => (Value is ListValue listValue) ? listValue.GetAt(index) : (index == 0) ? this : new Variable();
 
         /// <summary>
         /// Returns the items from this variable's list. Returns a single item if
@@ -340,7 +340,7 @@ namespace Silk
         public static Variable operator -(Variable var1, int value) => var1.Subtract(value);
         public static Variable operator -(Variable var1, double value) => var1.Subtract(value);
 
-        public static Variable operator *(Variable var1, Variable var2) => var1.Add(var2);
+        public static Variable operator *(Variable var1, Variable var2) => var1.Multiply(var2);
         public static Variable operator *(Variable var1, string value) => var1.Multiply(value);
         public static Variable operator *(Variable var1, int value) => var1.Multiply(value);
         public static Variable operator *(Variable var1, double value) => var1.Multiply(value);
