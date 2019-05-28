@@ -88,9 +88,11 @@ namespace Silk
         /// <returns></returns>
         public Token GetNextSkipNewLines()
         {
-            Token token = GetNext();
-            while (token.Type == TokenType.EndOfLine)
+            Token token;
+            do
+            {
                 token = GetNext();
+            } while (token.Type == TokenType.EndOfLine);
             return token;
         }
 
@@ -258,7 +260,7 @@ namespace Silk
             SavedUngetToken = token;
         }
 
-        public override string ToString() => $"Line {LexHelper.Line}, Column {LexHelper.Column}";
+        public override string ToString() => $"Line {LexHelper.Line}";
 
         #region Events
 

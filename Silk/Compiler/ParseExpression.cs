@@ -29,12 +29,8 @@ namespace Silk
         {
             variable = null;
             bool negate = false;
-            Token token;
 
-            if (allowLineBreak)
-                token = Lexer.GetNextSkipNewLines();
-            else
-                token = Lexer.GetNext();
+            Token token = allowLineBreak ? Lexer.GetNextSkipNewLines() : Lexer.GetNext();
             if (token.Type == TokenType.LeftBracket)
             {
                 // List size
@@ -101,12 +97,8 @@ namespace Silk
         internal bool ParseExpression(bool required = true, Action extendExpression = null, bool allowLineBreak = false)
         {
             int tokenCountIP;
-            Token token;
 
-            if (allowLineBreak)
-                token = Lexer.GetNextSkipNewLines();
-            else
-                token = Lexer.GetNext();
+            Token token = allowLineBreak ? Lexer.GetNextSkipNewLines() : Lexer.GetNext();
             if (token.Type == TokenType.LeftBracket)
             {
                 // List creation: a = [20]

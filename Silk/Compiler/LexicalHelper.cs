@@ -38,16 +38,6 @@ namespace Silk
         public int Line { get; private set; }
 
         /// <summary>
-        /// Returns the 1-based column number for the current position.
-        /// </summary>
-        public int Column => ((Index - LineStart) + 1);
-
-        /// <summary>
-        /// Index of the start of the current line. Used to calculate column position.
-        /// </summary>
-        private int LineStart;
-
-        /// <summary>
         /// Indicates if the current position is at the end of the text being parsed.
         /// </summary>
         public bool EndOfText => (Index >= Text.Length);
@@ -76,7 +66,6 @@ namespace Silk
         {
             Index = 0;
             Line = 1;
-            LineStart = 0;
         }
 
         /// <summary>
@@ -88,7 +77,6 @@ namespace Silk
             Text = text ?? string.Empty;
             Index = 0;
             Line = 1;
-            LineStart = 0;
         }
 
         /// <summary>
@@ -120,10 +108,7 @@ namespace Silk
             if (Index < Text.Length)
             {
                 if (Text[Index++] == '\n')
-                {
                     Line++;
-                    LineStart = Index;
-                }
             }
         }
 
@@ -138,10 +123,7 @@ namespace Silk
             while (Index < end)
             {
                 if (Text[Index++] == '\n')
-                {
                     Line++;
-                    LineStart = Index;
-                }
             }
         }
 
@@ -157,10 +139,7 @@ namespace Silk
                 if (MatchesCurrentPosition(s))
                     return true;
                 if (Text[Index++] == '\n')
-                {
                     Line++;
-                    LineStart = Index;
-                }
             }
             return false;
         }
@@ -177,10 +156,7 @@ namespace Silk
                 if (chars.Contains(Text[Index]))
                     return true;
                 if (Text[Index++] == '\n')
-                {
                     Line++;
-                    LineStart = Index;
-                }
             }
             return false;
         }
