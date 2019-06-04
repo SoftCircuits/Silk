@@ -1,13 +1,16 @@
 # Sample Source Code
 
-Below is a sample Silk source file. It makes the following assumptions about the host application:
+Below are two sample Silk programs. They make the following assumptions about the host application:
 
 - It has registered an intrinsic function called `Color`, which sets the foreground color and, optionally (if two arguments are passed), the background color.
 - It has registered intrinsic variables with all the standard colors (Black, Blue, White, etc.).
 - It has registered an intrinsic function called `ClearScreen`, which clears the console window.
 - It has registered an intrinsic function called `PrintLn`, which prints all the arguments to the console window, followed by a new line.
 - It has registered an intrinsic function called `Print`, which prints all the arguments to the console window (no new line).
+- It has registered an intrinsic function called `ReadLn`, which reads a string from the keyboard.
 - It has not disabled the internal functions.
+
+### Example 1: Random Tests
 
 ```
 ///////////////////////////////////////////////////////////////
@@ -79,5 +82,35 @@ double(x)
 triple(x)
 {
     return x * 3
+}
+```
+
+### Example 2: Show Whether or not a Year is a Leap Year
+
+```
+///////////////////////////////////////////////////////////////
+// Silk - Sample script
+//
+
+main()
+{
+    // Set colors and clear screen
+    color white, blue
+    clearscreen
+
+    println "*** Sample Silk Program"
+    println
+
+    while 1
+    {
+        print "Enter a year: "
+        year = readln()
+        if len(year) = 0
+            return
+        if year % 4 = 0 and (year % 100 <> 0 or year % 400 = 0)
+            println year, " is a leap year!"
+        else
+            println year, " is not a leap year!"
+    }
 }
 ```
