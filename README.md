@@ -1,5 +1,7 @@
 # Silk Overview
 
+![GitHub Logo](/docs/ScreenShot.png)
+
 The Simple Interpreted Language Kit (SILK) is a .NET class library that makes it easy to add scripting and automation to your .NET applications.
 
 The library includes three main components. A compiler, a compiled program, and a runtime. The compiler compiles the Silk source code to bytecode. This allows faster execution and also catches all source code syntax errors before running the Silk program.
