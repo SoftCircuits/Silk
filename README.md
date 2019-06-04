@@ -1,6 +1,6 @@
 # Silk Overview
 
-![GitHub Logo](/docs/ScreenShot.png)
+![Sample Program Screenshot](/docs/ScreenShot.png)
 
 The Simple Interpreted Language Kit (SILK) is a .NET class library that makes it easy to add scripting and automation to your .NET applications.
 
