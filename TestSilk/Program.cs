@@ -17,16 +17,15 @@ namespace TestSilk
             string path = @"D:\Users\Jonathan\source\repos\Silk\TestSilk\Sample.txt";
 
             Compiler compiler = new Compiler();
-            //compiler.CreateLogFile = true;
+            compiler.CreateLogFile = true;
             compiler.EnableLineNumbers = true;
-            //compiler.EnableInternalFunctions = false;
 
             // Register intrinsic functions and variables
-            compiler.RegisterFunction("PrintLn", 0, Function.NoParameterLimit);
             compiler.RegisterFunction("Print", 0, Function.NoParameterLimit);
+            compiler.RegisterFunction("PrintLn", 0, Function.NoParameterLimit);
             compiler.RegisterFunction("Color", 1, 2);
             compiler.RegisterFunction("ClearScreen", 0, 0);
-            compiler.RegisterFunction("ReadKey", 0, 0);
+            compiler.RegisterFunction("ReadLn", 0, 0);
             foreach (var color in Enum.GetValues(typeof(ConsoleColor)))
                 compiler.RegisterVariable(color.ToString(), new Variable((int)color));
 
@@ -35,10 +34,6 @@ namespace TestSilk
                 // Success
                 Console.WriteLine("COMPILE SUCCEEDED!");
                 Console.WriteLine();
-
-                //program.Save(Path.ChangeExtension(path, "cSilk"));
-                //program.Reset();
-                //program.Load(Path.ChangeExtension(path, "cSilk"));
 
                 Runtime runtime = new Runtime();
                 runtime.Begin += Runtime_Begin;
@@ -68,14 +63,14 @@ namespace TestSilk
         {
             switch (e.Name)
             {
+                case "Print":
+                    foreach (var v in e.Parameters)
+                        Console.Write(v.ToString());
+                    break;
                 case "PrintLn":
                     foreach (var v in e.Parameters)
                         Console.Write(v.ToString());
                     Console.WriteLine();
-                    break;
-                case "Print":
-                    foreach (var v in e.Parameters)
-                        Console.Write(v.ToString());
                     break;
                 case "Color":
                     Debug.Assert(e.Parameters.Length >= 1);
@@ -88,8 +83,8 @@ namespace TestSilk
                 case "ClearScreen":
                     Console.Clear();
                     break;
-                case "ReadKey":
-                    e.ReturnValue.SetValue(Console.ReadKey().KeyChar);
+                case "ReadLn":
+                    e.ReturnValue.SetValue(Console.ReadLine());
                     break;
                 default:
                     Debug.Assert(false);

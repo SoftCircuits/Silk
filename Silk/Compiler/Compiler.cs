@@ -338,9 +338,9 @@ namespace Silk
         }
 
         /// <summary>
-        /// Parses arguments for a function call. Assumes opening parenthesis has
-        /// been read. Reads up to and including the closing parenthesis. Returns
-        /// false on error.
+        /// Parses arguments for a function call. If <paramref name="usingParentheses"/>
+        /// is true, assumes opening parenthesis has been read and reads up to and
+        /// including the closing parenthesis. Returns false on error.
         /// </summary>
         /// <param name="function">Function being called. May be null for user
         /// functions. Used to verify argument count for intrinsic functions.</param>

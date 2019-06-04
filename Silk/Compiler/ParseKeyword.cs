@@ -289,7 +289,8 @@ namespace Silk
         {
             // Return can optionally be followed by expression
             Writer.Write(ByteCode.Return);
-            ParseExpression();
+            if (!ParseExpression(false))
+                Writer.Write(0); // No return tokens
             VerifyEndOfLine();
         }
 

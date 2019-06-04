@@ -90,11 +90,11 @@ namespace Silk
         /// was found.
         /// </summary>
         /// <param name="required">If true, an error is logged if no expression found.</param>
-        /// <param name="extendExpression">Function to add additional bytecodes to expression.
+        /// <param name="expressionExtender">Function to add additional bytecodes to expression.
         /// Will be included in token count.</param>
         /// <param name="allowLineBreak">If true, a new line is allowed before this expression.
         /// Set to true when parsing array initialization within curly braces.</param>
-        internal bool ParseExpression(bool required = true, Action extendExpression = null, bool allowLineBreak = false)
+        internal bool ParseExpression(bool required = true, Action expressionExtender = null, bool allowLineBreak = false)
         {
             int tokenCountIP;
 
@@ -145,13 +145,13 @@ namespace Silk
             tokenCountIP = Writer.Write(0);
             Writer.ResetCounter();
             // Build list of tokens in postfix order
-            if (!BuildPostfixTokens())
+            if (!WritePostfixTokens())
                 return false;
             // Were any expression tokens found?
             if (Writer.Counter > 0)
             {
                 // Allow caller to extend this expression
-                extendExpression?.Invoke();
+                expressionExtender?.Invoke();
                 // Write actual token count over placeholder
                 Writer.WriteAt(tokenCountIP, Writer.Counter);
                 // Expression parsed
@@ -168,10 +168,10 @@ namespace Silk
         }
 
         /// <summary>
-        /// Parses tokens and builds a list of tokens in postfix order.
+        /// Parses tokens and writes a list of tokens in postfix order.
         /// </summary>
         /// <returns>False if an error occurred; true otherwise.</returns>
-        private bool BuildPostfixTokens()
+        private bool WritePostfixTokens()
         {
             Stack<Token> operatorStack = new Stack<Token>();
             ExpressionState state = ExpressionState.None;

@@ -260,7 +260,7 @@ namespace Silk
             SavedUngetToken = token;
         }
 
-        public override string ToString() => $"Line {LexHelper.Line}";
+        public override string ToString() => $"Index {LexHelper.Index}, Line {LexHelper.Line}";
 
         #region Events
 
