@@ -15,9 +15,6 @@ This is demonstrated in the following example.
 ```cs
 Compiler compiler = new Compiler();
 
-// Enable line numbers for runtime exceptions
-compiler.EnableLineNumbers = true;
-
 // Register intrinsic functions
 compiler.RegisterFunction("Print", 0, Function.NoParameterLimit);
 compiler.RegisterFunction("Color", 1, 2);
