@@ -126,7 +126,7 @@ namespace Silk
         /// <param name="bytecode">Bytecode to write.</param>
         public void WriteAt(int ip, ByteCode bytecode)
         {
-            Debug.Assert(ip >= 0 && ip < ByteCodeEntries.Count);
+            Debug.Assert(ip >= 0 && ip < IP);
             Debug.Assert(ByteCodeEntries[ip].IsBytecode);
             ByteCodeEntries[ip].Value = (int)bytecode;
         }
@@ -139,7 +139,7 @@ namespace Silk
         /// <param name="byteCode">Value to write.</param>
         public void WriteAt(int ip, int value)
         {
-            Debug.Assert(ip >= 0 && ip < ByteCodeEntries.Count);
+            Debug.Assert(ip >= 0 && ip < IP);
             Debug.Assert(!ByteCodeEntries[ip].IsBytecode);
             ByteCodeEntries[ip].Value = value;
         }
@@ -219,9 +219,14 @@ namespace Silk
         {
             // Read source file
             string[] lines = File.ReadAllLines(sourcePath);
+            // Must only be called after creating bytecodes
+            if (ByteCodeEntries == null || ByteCodeEntries.Count == 0)
+            {
+                Debug.Assert(false);
+                return;
+            }
+            // Write log file
             int lastPrintedLine = 0;
-
-            Debug.Assert(ByteCodeEntries != null && ByteCodeEntries.Count > 0);
             using (StreamWriter file = new StreamWriter(logPath, false))
             {
                 file.WriteLine("SILK Bytecode Listing - Created {0:d} {0:t}", DateTime.Now);

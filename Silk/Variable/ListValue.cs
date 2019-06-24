@@ -33,10 +33,21 @@ namespace Silk
         public override ValueType Type => ValueType.List;
         public override int ListCount => Value.Count;
         public override IEnumerable<Variable> GetList() => Value;
-        public override string ToString() => string.Format("{{ {0} }}", string.Join(", ", Value));
+        public override string ToString() => $"{{ {string.Join(", ", Value)} }}";
         public override int ToInteger() => IsValidIndex(0) ? Value[0].ToInteger() : 0;
         public override double ToFloat() => IsValidIndex(0) ? Value[0].ToFloat() : 0.0;
-        public override int GetHashCode() => HashCode.Combine(Type, Value);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 31 + Type.GetHashCode();
+                foreach (Variable v in Value)
+                    hash = hash * 31 + Value.GetHashCode();
+                return hash;
+            }
+        }
 
         public Variable GetAt(int index) => IsValidIndex(index) ? Value[index] : new Variable();
         public bool IsValidIndex(int index) => index >= 0 && index < Value.Count;

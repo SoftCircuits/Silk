@@ -26,7 +26,7 @@ namespace Silk
         /// <summary>
         /// Gets or sets whether line numbers are included in the generated
         /// <see>CompiledProgram</see>. Makes line numbers available during run-time exceptions.
-        /// False by default.
+        /// True by default.
         /// </summary>
         public bool EnableLineNumbers { get; set; }
 
@@ -60,7 +60,7 @@ namespace Silk
             IntrinsicVariables = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
             MaxErrors = 30;
             CreateLogFile = false;
-            EnableLineNumbers = false;
+            EnableLineNumbers = true;
             EnableInternalFunctions = true;
         }
 

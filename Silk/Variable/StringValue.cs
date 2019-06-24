@@ -24,8 +24,17 @@ namespace Silk
         public override int ToInteger() => int.TryParse(Value, out int value) ? value : 0;
         public override double ToFloat() => double.TryParse(Value, out double value) ? value : 0.0;
         public override bool IsFloat() => IsFloat(Value);
-        public override int GetHashCode() => HashCode.Combine(Type, Value);
 
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 31 + Type.GetHashCode();
+                hash = hash * 31 + Value.GetHashCode();
+                return hash;
+            }
+        }
         #region Operations
 
         public override Variable Add(Variable value) => (IsFloat() || value.IsFloat()) ? new Variable(ToFloat() + value.ToFloat()) : new Variable(ToInteger() + value.ToInteger());

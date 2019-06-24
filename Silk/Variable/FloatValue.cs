@@ -29,7 +29,17 @@ namespace Silk
         public override int ToInteger() => (int)Math.Round(Value);
         public override double ToFloat() => Value;
         public override bool IsFloat() => true;
-        public override int GetHashCode() => HashCode.Combine(Type, Value);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 31 + Type.GetHashCode();
+                hash = hash * 31 + Value.GetHashCode();
+                return hash;
+            }
+        }
 
         #region Operations
 
