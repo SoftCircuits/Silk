@@ -1,3 +1,11 @@
+# Silk Library
+
+Install via [NuGet](https://www.nuget.org/packages/BlackBeltCoder.Silk/):
+
+```
+Install-Package BlackBeltCoder.Silk
+```
+
 # Silk Overview
 
 ![Sample Program Screenshot](/docs/ScreenShot.png)
