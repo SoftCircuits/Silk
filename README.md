@@ -1,12 +1,12 @@
 # Silk Library
 
-Install via [NuGet](https://www.nuget.org/packages/BlackBeltCoder.Silk/):
+[![NuGet version (BlackBeltCoder.Silk)](https://img.shields.io/nuget/v/BlackBeltCoder.Silk.svg?style=flat-square)](https://www.nuget.org/packages/BlackBeltCoder.Silk/)
 
 ```
 Install-Package BlackBeltCoder.Silk
 ```
 
-# Silk Overview
+## Overview
 
 ![Sample Program Screenshot](/docs/ScreenShot.png)
 
