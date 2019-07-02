@@ -1,9 +1,9 @@
 # Silk Library
 
-[![NuGet version (BlackBeltCoder.Silk)](https://img.shields.io/nuget/v/BlackBeltCoder.Silk.svg?style=flat-square)](https://www.nuget.org/packages/BlackBeltCoder.Silk/)
+[![NuGet version (SoftCircuits.Silk)](https://img.shields.io/nuget/v/SoftCircuits.Silk.svg?style=flat-square)](https://www.nuget.org/packages/SoftCircuits.Silk/)
 
 ```
-Install-Package BlackBeltCoder.Silk
+Install-Package SoftCircuits.Silk
 ```
 
 ## Overview
