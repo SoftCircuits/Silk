@@ -1,4 +1,12 @@
-# Silk Overview
+# Silk Library
+
+[![NuGet version (SoftCircuits.Silk)](https://img.shields.io/nuget/v/SoftCircuits.Silk.svg?style=flat-square)](https://www.nuget.org/packages/SoftCircuits.Silk/)
+
+```
+Install-Package SoftCircuits.Silk
+```
+
+## Overview
 
 ![Sample Program Screenshot](/docs/ScreenShot.png)
 
