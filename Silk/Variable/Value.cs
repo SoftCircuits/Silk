@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     public enum ValueType
     {

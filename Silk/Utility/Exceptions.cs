@@ -3,7 +3,7 @@
 //
 using System;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     internal class TooManyErrorsException : Exception
     {

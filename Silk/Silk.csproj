@@ -12,20 +12,25 @@ The library includes three main components. A compiler, a compiled program, and 
 
 The compiler produces a compiled program. A compiled program can be saved to a file, and later read from a file. This allows you to load and run a Silk program without recompiling it each time.
 
-Finally, the runtime component can execute a compiled program.</Description>
-    <Copyright>Copyright © 2019 Jonathan Wood</Copyright>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+Finally, the runtime component can execute a compiled program.
+
+The main power of this library is that it allows you to register your own functions and variables with the compiler and those functions and variables can be called from the Silk program. When one of your registered functions is called, the Function event is raised, allowing the host application to provide key functionality specific to the host application's domain.
+
+The Silk language itself is designed to be relatively easy to learn. It has no semicolons or other excessive punctuation, and the language is not case sensitive.</Description>
+    <Copyright>Copyright © 2019 SoftCircuits</Copyright>
+    <PackageLicenseFile>License.txt</PackageLicenseFile>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageReleaseNotes>Fixed issue with Value.GetHashCode().</PackageReleaseNotes>
-    <RepositoryType>Class Library</RepositoryType>
+    <PackageReleaseNotes>Renamed namespace from Silk to SoftCircuits.Silk.</PackageReleaseNotes>
+    <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/SoftCircuits/Silk</RepositoryUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/SoftCircuits/Silk/master/Logo_64x64.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/SoftCircuits/Silk</PackageProjectUrl>
     <PackageTags>interpreter automation scripting .net compiler script runtime bytecodes</PackageTags>
-    <PackageId>BlackBeltCoder.Silk</PackageId>
+    <PackageId>SoftCircuits.Silk</PackageId>
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
     <Version>1.0.1</Version>
+    <PackageLicenseExpression></PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -43,7 +48,7 @@ Finally, the runtime component can execute a compiled program.</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\HtmlMonkey\LICENSE">
+    <None Include="..\License.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

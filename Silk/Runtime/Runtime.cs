@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     public class Runtime
     {
@@ -83,10 +83,10 @@ namespace Silk
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
 
+            FunctionStack.Push(function);
             Reader.Push();
             Debug.Assert(function.IP != ByteCodes.InvalidIP);
             Reader.GoTo(function.IP);
-            FunctionStack.Push(function);
 
             // Dispatch each bytecode to its handler
             ByteCode bytecode;

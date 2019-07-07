@@ -4,7 +4,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     public enum FuntionType
     {

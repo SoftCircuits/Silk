@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silk", "Silk\Silk.csproj", "{EB5ACA80-45DE-4AB2-ABAD-295FDCC0F673}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSilk", "TestSilk\TestSilk.csproj", "{E8028075-8800-432D-BA00-16F007FADF7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSilk", "TestSilk\TestSilk.csproj", "{E8028075-8800-432D-BA00-16F007FADF7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

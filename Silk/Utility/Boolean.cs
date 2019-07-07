@@ -3,7 +3,7 @@
 //
 using System;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     /// <summary>
     /// Support for SILK language Boolean values.

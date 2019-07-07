@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     /// <summary>
     /// Represents a data variable.

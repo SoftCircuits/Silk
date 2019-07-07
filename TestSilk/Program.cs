@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2019 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
-using Silk;
+using SoftCircuits.Silk;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -3,7 +3,7 @@
 //
 using System;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     [Flags]
     internal enum ByteCodeVariableFlag

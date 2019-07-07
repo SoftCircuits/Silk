@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     /// <summary>
     /// Represents a bytecode entry. Additional properties used primarily for

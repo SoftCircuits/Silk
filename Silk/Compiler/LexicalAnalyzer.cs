@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     /// <summary>
     /// Converts a string of characters to tokens.

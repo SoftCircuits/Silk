@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Silk
+namespace SoftCircuits.Silk
 {
     internal class InternalFunctionInfo
     {
