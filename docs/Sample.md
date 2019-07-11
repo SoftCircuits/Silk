@@ -105,7 +105,7 @@ main()
     {
         print "Enter a year: "
         year = readln()
-        if len(year) = 0
+        if int(year) = 0
             return
         if year % 4 = 0 and (year % 100 <> 0 or year % 400 = 0)
             println year, " is a leap year!"
