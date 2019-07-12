@@ -88,7 +88,7 @@ triple(x)
 
 ### Example 2: Mandelbrot
 
-This script renders the Mandelbrot set. Note that it takes a moment for this script to run. But it does demonstrate some of the capabilities of the language.
+This script renders the Mandelbrot set. Note that, depending on the size of the window, it can take a while for this script to run. An interpreted script is probably not the best choice for this task. But it does demonstrate some of the capabilities of the language.
 
 This script makes the following assumptions about the host application:
 
