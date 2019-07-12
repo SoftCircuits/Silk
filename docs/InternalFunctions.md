@@ -52,6 +52,10 @@ Returns the value of the specified environment variable.
 
 Returns `e` raised to the specified power.
 
+### Float(*value*)
+
+Converts the given value to a floating point number.
+
 ### Hex(*value*)
 
 Returns a hexedecimal string equal to the given value.
