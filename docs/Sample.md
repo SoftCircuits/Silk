@@ -88,7 +88,9 @@ triple(x)
 
 ### Example 2: Mandelbrot
 
-This script renders a Mandelbrot set. It makes the following assumptions about the host application:
+This script renders the Mandelbrot set. Note that it takes a moment for this script to run. But it does demonstrate some of the capabilities of the language.
+
+This script makes the following assumptions about the host application:
 
 - It has registered an intrinsic function called `Clear`, which clears the current graphics canvas.
 - It has registered an intrinsic function called `Width`, which returns the width of the current graphics canvas.
