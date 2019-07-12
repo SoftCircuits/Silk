@@ -4,39 +4,58 @@
 using System;
 using System.Diagnostics;
 
+/// <summary>
+/// Various representations of functions.
+/// </summary>
+/// <remarks>
+/// Function Types:
+/// ===============
+/// User Function:
+/// A function defined in the SILK source code.
+/// 
+/// Intrinsic Function:
+/// A function added via <see cref="Compiler.RegisterFunction"></see>. It is executed
+/// at runtime by raising the <c>Function</c> event.
+/// 
+/// Internal Intrinsic Function (or Internal Function):
+/// A function defined within the SILK library and made available to the SILK program when
+/// <see cref="Compiler.EnableInternalFunctions"></see> is set to true.
+/// </remarks>
 namespace SoftCircuits.Silk
 {
-    public enum FuntionType
-    {
-        Internal,
-        Intrinsic,
-        User
-    }
-
     /// <summary>
-    /// This class is made public so const values can be accessed externally.
+    /// Base class for several function classes. Also defines some function-related
+    /// constants. This class is made public so const values can be accessed
+    /// externally.
     /// </summary>
     public abstract class Function
     {
         /// <summary>
-        /// Signifies not restriction on the number of parameters sent to intrinsic
+        /// Name of Main function. This function must be defined and is where execution
+        /// starts.
+        /// </summary>
+        public const string Main = "Main";
+
+        /// <summary>
+        /// Signifies no restriction on the number of parameters passed to intrinsic
         /// functions.
         /// </summary>
         public const int NoParameterLimit = -1;
 
         /// <summary>
-        /// Name of Main function. This function must be defined and is where execution
-        /// starts.
-        /// </summary>
-        public const string Main = "main";
-
-        /// <summary>
-        /// Function name
+        /// Function name.
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual bool IsIntrinsic => (this is IntrinsicFunction);
 
+        /// <summary>
+        /// Initializes base class.
+        /// </summary>
+        /// <param name="name">Name of function.</param>
         public Function(string name)
         {
             Name = name;
@@ -44,7 +63,7 @@ namespace SoftCircuits.Silk
     }
 
     /// <summary>
-    /// Represents a user function (a function defined in source code).
+    /// Represents a user function.
     /// </summary>
     internal class UserFunction : Function
     {
@@ -66,8 +85,8 @@ namespace SoftCircuits.Silk
             IP = function.IP;
             Debug.Assert(function.Variables != null);
             Debug.Assert(function.Parameters != null);
-            NumVariables = function.Variables.Count;
-            NumParameters = function.Parameters.Count;
+            NumVariables = function.Variables?.Count ?? 0;
+            NumParameters = function.Parameters?.Count ?? 0;
         }
     }
 
@@ -88,30 +107,20 @@ namespace SoftCircuits.Silk
             Parameters = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public CompileTimeUserFunction(UserFunction function)
-            : base(function.Name, function.IP)
-        {
-            NumVariables = 0;
-            NumParameters = 0;
-            Labels = new OrderedDictionary<string, Label>(StringComparer.OrdinalIgnoreCase);
-            Variables = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
-            Parameters = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
-        }
-
         /// <summary>
-        /// Returns the ID of the local variable or parameter with the given name.
-        /// The variable is added if not found.
+        /// Returns the ID of the local variable or parameter with the given name, or
+        /// creates the variable is added if it was not found.
         /// </summary>
         /// <param name="name">Variable name.</param>
         internal int GetVariableId(string name)
         {
             // First search parameters
             int index = Parameters.IndexOf(name);
-            if (index >= 0)
+            if (index != -1)
                 return index | (int)ByteCodeVariableFlag.Parameter;
             // Next search local variables
             index = Variables.IndexOf(name);
-            if (index >= 0)
+            if (index != -1)
                 return index | (int)ByteCodeVariableFlag.Local;
             // Variable not defined; create it
             return Variables.Add(name, new Variable()) | (int)ByteCodeVariableFlag.Local;
@@ -119,7 +128,7 @@ namespace SoftCircuits.Silk
     }
 
     /// <summary>
-    /// Represents an intrinsic function defined by the host program.
+    /// Represents an intrinsic function.
     /// </summary>
     internal class IntrinsicFunction : Function
     {
@@ -142,7 +151,7 @@ namespace SoftCircuits.Silk
         /// <param name="message">Set to description of how the count is invalid if this method returns false.</param>
         internal bool IsParameterCountValid(int count, out string message)
         {
-            message = string.Empty;
+            message = null;
 
             if (MinParameters == MaxParameters)
             {
@@ -190,7 +199,7 @@ namespace SoftCircuits.Silk
     }
 
     /// <summary>
-    /// Used to track function information during compilation.
+    /// Represents a user function at run time.
     /// </summary>
     internal class RuntimeFunction
     {

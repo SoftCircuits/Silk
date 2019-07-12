@@ -41,6 +41,7 @@ namespace SoftCircuits.Silk
             ["Date"] = new InternalFunctionInfo(Date, 0, 0),
             ["Environ"] = new InternalFunctionInfo(Environ, 1, 1),
             ["Exp"] = new InternalFunctionInfo(Exp, 1, 1),
+            ["Float"] = new InternalFunctionInfo(Float, 1, 1),
             ["Hex"] = new InternalFunctionInfo(Hex, 1, 1),
             ["InStr"] = new InternalFunctionInfo(InStr, 2, 3),
             ["Int"] = new InternalFunctionInfo(Int, 1, 1),
@@ -218,6 +219,14 @@ namespace SoftCircuits.Silk
         }
 
         /// <summary>
+        /// Converts the given value to a floating point number.
+        /// </summary>
+        private static void Float(Variable[] parameters, Variable returnValue)
+        {
+            returnValue.SetValue(parameters[0].ToFloat());
+        }
+
+        /// <summary>
         /// Returns a hexedecimal string equal to the given value.
         /// </summary>
         private static void Hex(Variable[] parameters, Variable returnValue)
@@ -265,7 +274,10 @@ namespace SoftCircuits.Silk
         {
             Debug.Assert(parameters.Length == 2);
             string s = parameters[0].ToString();
-            returnValue.SetValue(s.Substring(0, parameters[1].ToInteger()));
+            int len = parameters[1].ToInteger();
+            if (s.Length > len)
+                returnValue.SetValue(s.Substring(0, len));
+            returnValue.SetValue(s);
         }
 
         /// <summary>
@@ -423,7 +435,7 @@ namespace SoftCircuits.Silk
             string s = (parameters[0].Type == ValueType.String) ?
                 parameters[0].ToString() :
                 ((char)parameters[0].ToInteger()).ToString();
-            StringBuilder builder = new StringBuilder(s.Length * parameters[1].ToInteger());
+            StringBuilder builder = new StringBuilder(s.Length * Math.Max(0, parameters[1].ToInteger()));
             for (int i = 0; i < parameters[1].ToInteger(); i++)
                 builder.Append(s);
             returnValue.SetValue(builder.ToString());
