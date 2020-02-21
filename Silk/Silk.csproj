@@ -16,21 +16,22 @@ Finally, the runtime component can execute a compiled program.
 
 The main power of this library is that it allows you to register your own functions and variables with the compiler and those functions and variables can be called from the Silk program. When one of your registered functions is called, the Function event is raised, allowing the host application to provide key functionality specific to the host application's domain.
 
-The Silk language itself is designed to be relatively easy to learn. It has no semicolons or other excessive punctuation, and the language is not case sensitive.</Description>
-    <Copyright>Copyright © 2019 SoftCircuits</Copyright>
+The Silk language itself is designed to be relatively easy to learn. It has no semicolons or other excessive punctuation, it's not case sensitive and is very flexible about expressions involving mixed data types.</Description>
+    <Copyright>Copyright © 2019-2020 SoftCircuits</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageReleaseNotes>Renamed namespace from Silk to SoftCircuits.Silk.</PackageReleaseNotes>
+    <PackageReleaseNotes>Minor tweaks; added icon file.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/SoftCircuits/Silk</RepositoryUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/SoftCircuits/Silk/master/Logo_64x64.png</PackageIconUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <PackageIconUrl></PackageIconUrl>
     <PackageProjectUrl>https://github.com/SoftCircuits/Silk</PackageProjectUrl>
     <PackageTags>interpreter automation scripting .net compiler script runtime bytecodes</PackageTags>
     <PackageId>SoftCircuits.Silk</PackageId>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+    <Version>1.0.3</Version>
     <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageIcon>Logo_64x64.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -49,6 +50,10 @@ The Silk language itself is designed to be relatively easy to learn. It has no s
 
   <ItemGroup>
     <None Include="..\License.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\Logo_64x64.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

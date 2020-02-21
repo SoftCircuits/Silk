@@ -78,7 +78,7 @@ AdjustAspect()
     want_aspect = (m_Ymax - m_Ymin) / (m_Xmax - m_Xmin)
     picCanvas_aspect = float(Height()) / float(Width())
     if (want_aspect > picCanvas_aspect)
-    {
+    {xxx
         // The selected area is too tall and thin.
         // Make it wider.
         width = (m_Ymax - m_Ymin) / picCanvas_aspect
