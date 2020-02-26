@@ -17,8 +17,8 @@ namespace SoftCircuits.Silk
     /// </remarks>
     internal class OrderedDictionary<TKey, TValue> : IEnumerable<TValue>
     {
-        private Dictionary<TKey, int> IndexLookup;
-        private List<TValue> Items;
+        private readonly Dictionary<TKey, int> IndexLookup;
+        private readonly List<TValue> Items;
 
         public OrderedDictionary()
         {

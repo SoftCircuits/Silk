@@ -20,16 +20,16 @@ The Silk language itself is designed to be relatively easy to learn. It has no s
     <Copyright>Copyright © 2019-2020 SoftCircuits</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageReleaseNotes>Minor tweaks; added icon file.</PackageReleaseNotes>
+    <PackageReleaseNotes>Modified package icon.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl></RepositoryUrl>
     <PackageIconUrl></PackageIconUrl>
     <PackageProjectUrl>https://github.com/SoftCircuits/Silk</PackageProjectUrl>
-    <PackageTags>interpreter automation scripting .net compiler script runtime bytecodes</PackageTags>
+    <PackageTags>interpreter script scripting .net compiler runtime bytecode automation</PackageTags>
     <PackageId>SoftCircuits.Silk</PackageId>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
-    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
+    <Version>1.0.4</Version>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageIcon>Logo_64x64.png</PackageIcon>
   </PropertyGroup>

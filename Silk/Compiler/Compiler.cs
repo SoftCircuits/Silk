@@ -7,8 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-// TODO: Use System.Collections.Specialized.OrderedDictionary instead of our own
-
 namespace SoftCircuits.Silk
 {
     public partial class Compiler
