@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 //
 using System;
+using System.Globalization;
 
 namespace SoftCircuits.Silk
 {
@@ -21,7 +22,7 @@ namespace SoftCircuits.Silk
 
         public FloatValue(string value)
         {
-            Value = double.Parse(value);
+            Value = double.Parse(value, new CultureInfo("en-US"));
         }
 
         public override ValueType Type => ValueType.Float;
