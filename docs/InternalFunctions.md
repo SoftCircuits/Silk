@@ -116,7 +116,7 @@ Returns the square root of the given argument.
 
 Returns a string with *value* repeated the number of times specified by *count*.
 
-If *value* is a stringr value, then that string is repeated. Otherwise, the string repeated will contain one character with the specified ASCII/Unicode value specified by *value*
+If *value* is a string value, then that string is repeated. Otherwise, the string repeated will contain one character with the specified ASCII/Unicode value specified by *value*
 
 ### Tan(*value*)
 
