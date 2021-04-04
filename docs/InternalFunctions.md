@@ -100,9 +100,9 @@ Converts the given *value* to an octal string.
 
 Returns a string with the right-most *count* characters from *s*.
 
-### Round(*value*)
+### Round(*value*[, *decimals*)
 
-Rounds the given value to the nearest integer.
+Rounds the given value to the nearest integer. If *decimals* is specified, then this function rounds to the specified number of decimal places.
 
 ### Sin(*value*)
 
