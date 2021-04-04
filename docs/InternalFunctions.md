@@ -128,10 +128,10 @@ Returns a string with the current time.
 
 ## Variables
 
-### E
+### False
 
-Represents the natural logarithmic base, specified by the constant *e*.
+Represents Boolean false (0).
 
-### Pi
+### True
 
-Represents the ratio of the circumference of a circle to its diameter, specified by the constant *&pi;*.
+Represents Boolean true (-1).
