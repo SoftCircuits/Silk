@@ -8,7 +8,7 @@ Install-Package SoftCircuits.Silk
 
 ## Overview
 
-![Sample Program Screenshot](/docs/ScreenShot.png)
+![Sample Program Screenshot](https://user-images.githubusercontent.com/3191331/113802537-1f980d80-9718-11eb-8dc7-f2947038ed06.PNG)
 
 The Simple Interpreted Language Kit (SILK) is a .NET class library that makes it easy to add scripting and automation to your .NET applications.
 
