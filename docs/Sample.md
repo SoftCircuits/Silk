@@ -1,109 +1,148 @@
 # Sample Source Code
 
-Below are two sample Silk scripts.
+This page provide some sample Silk scripts (source code).
 
-### Example 1: Varied Tests
+### Payment Calculator Example
 
-This script demonstrates various constructs of the Silk language. It makes the following assumptions about the host application:
-
-- It has registered an intrinsic function called `Color`, which sets the foreground color and, optionally (if two arguments are passed), the background color.
-- It has registered intrinsic variables with all the standard colors (Black, Blue, White, etc.).
-- It has registered an intrinsic function called `ClearScreen`, which clears the console window.
-- It has registered an intrinsic function called `PrintLn`, which prints all the arguments to the console window, followed by a new line.
-- It has registered an intrinsic function called `Print`, which prints all the arguments to the console window (no new line).
-- It has not disabled the internal functions.
+This example calculates the principle and interest payment amount on a loan. It assumes the host application defines the functions `Print()`, `PrintLine()`, `ReadLine()`, `ReadKey()`, `ClearScreen()` and `SetColor()`. It also assumed the host application has defined color variables for user with `SetColor()`.
 
 ```
 ///////////////////////////////////////////////////////////////
 // Silk - Sample script
 //
 
-// Variables declared here are global to all functions
-var array = { 20, 30, "abc", 40, "def", 50, [5], { 1, 2, 3 } }
+main()
+{
+    setcolor white, darkblue
+    clearscreen
+
+    print "Enter loan amount: "
+    loanamount = readline()
+
+    print "Enter number of years: "
+    payments = readline()
+
+    print "Enter the interest rate percent: "
+    interestrate = readline()
+
+    print "Payment (principle and interest) is: "
+    print "$", round(calculatepayment(loanamount, payments * 12, interestrate / 100 / 12), 2)
+    printline
+}
+
+calculatepayment(loanamount, payments, interestrate)
+{
+    if payments = 0
+        return loanamount
+
+    if interestrate = 0
+        return loanamount / payments
+
+    temp = pow(interestrate + 1.0, payments)
+
+    return -(-(loanamount * temp) / ((temp - 1) / interestRate))
+}
+```
+
+### Prime Numbers Example
+
+This example displays all the prime numbers within the specified range. It assumes the host application defines the functions `Print()`, `PrintLine()`, `ReadLine()`, `ReadKey()`, `ClearScreen()` and `SetColor()`. It also assumed the host application has defined color variables for user with `SetColor()`.
+
+```
+///////////////////////////////////////////////////////////////
+// Silk - Sample script
+//
 
 main()
 {
     // Set colors and clear screen
-    color white, blue
+    setcolor white, darkblue
     clearscreen
 
-    // Print header
-    println string("*", 78)
-    println "* SILK Example Program"
-    println string("*", 78)
-    println
+    // Get start number
+    print "Enter starting number: "
+    start = readline()
+    if start = ""
+        return
 
-    // Print global array
-    println "Array: " & array
-    println
+    // Get end number
+    print "Enter ending number: "
+    end = readline()
+    if end = ""
+        return
 
-    // Print local array
-    months = {
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
+    for i = start to end
+    {
+        flag_var = 0
+        for j = 2 to i / 2
+        {
+            if(i % j = 0)
+            {
+                flag_var = 1
+                break
+            }
+        }
+        if flag_var = 0
+            printline i
     }
-    println "Months: ", months
-    println
-
-    // Print each element in array
-    println "Array Elements:"
-    for i = 1 to len(array)
-        println "  \"" & array[i] & "\""
-    println
-
-    // Expressions
-    println "Expressions:"
-    println "  2 + 2 = ", 2 + 2
-    println "  50 / (2 + 3) = ", 50 / (2 + 3)
-    println "  (2 + 7) * (2 * (8 + double(5) * (100 + triple(7)))) = ", (2 + 7) * (2 * (8 + double(5) * (100 + triple(7))))
-    println
-
-    // Characters
-    println "Characters:"
-    for i = 48 to 126
-        print chr(i)
-    println
-}
-
-double(x)
-{
-    return x * 2
-}
-
-triple(x)
-{
-    return x * 3
 }
 ```
 
-### Example 2: Mandelbrot
+### Leap Year Example
 
-This script renders the Mandelbrot set. Note that, depending on the size of the window, it can take a while for this script to run. An interpreted script is probably not the best choice for this task. But it does demonstrate some of the capabilities of the language.
-
-**IMPORTANT: Unless you size the window small, it will take a long time to render when you run this program. This is not a typical use of this library. It is simply intended to show the flexibility of SILK.**
-
-This script makes the following assumptions about the host application:
-
-- It has registered an intrinsic function called `Clear`, which clears the current graphics canvas.
-- It has registered an intrinsic function called `Width`, which returns the width of the current graphics canvas.
-- It has registered an intrinsic function called `Height`, which returns the height of the current graphics canvas.
-- It has registered an intrinsic function called `SetPixel`, which draws a pixel at the given coordinates.
-- It has registered intrinsic variables with all the values of the `KnownColor` enum.
-- It has not disabled the internal functions.
+This example indicates whether or not the entered years are leap years. It assumes the host application defines the functions `Print()`, `PrintLine()`, `ReadLine()`, `ReadKey()`, `ClearScreen()` and `SetColor()`. It also assumed the host application has defined color variables for user with `SetColor()`.
 
 ```
 ///////////////////////////////////////////////////////////////
-// Silk - Manelbrot example script
+// Silk - Sample script
+//
+
+main()
+{
+    // Set colors and clear screen
+    setcolor cyan, darkblue
+    clearscreen
+
+    // Get year
+    print "Enter year: "
+    year = readline()
+    while len(year) = 4
+    {
+        print year & " is"
+        if not isleapyear(year)
+            print " not"
+        printline " a leap year"
+        printline
+
+        print "Enter year: "
+        year = readline()
+    }
+}
+
+isleapyear(y)
+{
+    // leap year if perfectly divisible by 400
+    if (y % 400 = 0)
+        return true
+    // not a leap year if divisible by 100
+    // but not divisible by 400
+    if (y % 100 = 0)
+        return false
+    // leap year if not divisible by 100
+    // but divisible by 4
+    if (y % 4 = 0)
+        return true
+    // all other years are not leap years
+    return false
+}
+```
+
+### Mandelbrot Example
+This example paints a Mandelbrot image. This is probably not an idea application of the Silk library as the image can take a while to render, especially if the window is large. But it does show the flexibility and power of Silk. This examplle assumes the host application defines the functions `SetPixel()`, `Clear()`, `Width()` and `Height()`. It also assumes the host application has defined color variables for use with `SetPixel()`.
+
+```
+///////////////////////////////////////////////////////////////
+// Silk - Mandelbrot example script
 // Adapted from:
 // http://csharphelper.com/blog/2014/07/draw-a-mandelbrot-set-fractal-in-c/
 //

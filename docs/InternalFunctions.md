@@ -100,9 +100,9 @@ Converts the given *value* to an octal string.
 
 Returns a string with the right-most *count* characters from *s*.
 
-### Round(*value*)
+### Round(*value*[, *decimals*])
 
-Rounds the given value to the nearest integer.
+Rounds the given value to the nearest integer. If *decimals* is specified, then this function rounds to the specified number of decimal places.
 
 ### Sin(*value*)
 
@@ -116,7 +116,7 @@ Returns the square root of the given argument.
 
 Returns a string with *value* repeated the number of times specified by *count*.
 
-If *value* is a stringr value, then that string is repeated. Otherwise, the string repeated will contain one character with the specified ASCII/Unicode value specified by *value*
+If *value* is a string value, then that string is repeated. Otherwise, the string repeated will contain one character with the specified ASCII/Unicode value specified by *value*
 
 ### Tan(*value*)
 
@@ -128,10 +128,10 @@ Returns a string with the current time.
 
 ## Variables
 
-### E
+### False
 
-Represents the natural logarithmic base, specified by the constant *e*.
+Represents Boolean false (0).
 
-### Pi
+### True
 
-Represents the ratio of the circumference of a circle to its diameter, specified by the constant *&pi;*.
+Represents Boolean true (-1).
