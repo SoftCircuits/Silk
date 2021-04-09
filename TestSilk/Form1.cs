@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
+using SilkPlatforms;
 using SoftCircuits.Silk;
 using System;
 using System.Drawing;
@@ -14,6 +15,14 @@ namespace TestSilk
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            cboPlatform.Items.Clear();
+            foreach (var platform in Enum.GetValues<SilkPlatform>())
+                cboPlatform.Items.Add(new SilkPlatformListItem(RunProgram.GetPlatformDescription(platform), platform));
+            cboPlatform.SelectedIndex = 0;
         }
 
         #region Document handling
@@ -91,15 +100,10 @@ namespace TestSilk
                 {
                     lvwErrors.Items.Clear();
 
-                    // Compile program
-                    RunProgram runProgram = new RunProgram();
-                    if (runProgram.Compile(documentManager1.FileName, out CompiledProgram program, false))
-                    {
-                        // Success: run program in Run form
-                        frmRun frm = new frmRun(runProgram, program);
-                        frm.ShowDialog();
-                    }
-                    else
+                    SilkPlatform platform = (cboPlatform.SelectedItem is SilkPlatformListItem listItem) ? listItem.Platform : SilkPlatform.Console;
+
+                    RunProgram runProgram = new(platform);
+                    if (!runProgram.Run(txtScript.Text))
                     {
                         // Build failed: Display errors
                         foreach (Error error in runProgram.Errors)
@@ -126,11 +130,11 @@ namespace TestSilk
             if (items.Count > 0)
             {
                 var item = items[0];
-                var error = item.Tag as Error;
-                if (error != null)
+                if (item.Tag is Error error)
                 {
                     txtScript.SelectionStart = txtScript.GetFirstCharIndexFromLine(error.Line - 1);
-                    txtScript.SelectionLength = 0;
+                    int line = txtScript.GetLineFromCharIndex(txtScript.SelectionStart);
+                    txtScript.SelectionLength = txtScript.Lines[line].Length;
                     txtScript.ScrollToCaret();
                     txtScript.Focus();
                 }

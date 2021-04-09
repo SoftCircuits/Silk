@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -112,7 +112,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// TokenType to ByteCode lookup. Should include all token types that are operators.
         /// </summary>
-        private static Dictionary<TokenType, ByteCode> ByteCodeLookup = new Dictionary<TokenType, ByteCode>
+        private static readonly Dictionary<TokenType, ByteCode> ByteCodeLookup = new()
         {
             [TokenType.Plus] = ByteCode.EvalAdd,
             [TokenType.Minus] = ByteCode.EvalSubtract,

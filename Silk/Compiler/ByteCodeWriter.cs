@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SoftCircuits.Silk
 {
@@ -43,9 +44,9 @@ namespace SoftCircuits.Silk
             else
             {
                 string s = string.Format("{0} (0x{0:x08})", Value);
-                ByteCodeVariableFlag flag = (ByteCodeVariableFlag)Value & ByteCodeVariableFlag.All;
-                if (flag != ByteCodeVariableFlag.None)
-                    s += $" : {flag}[{Value & ~(int)ByteCodeVariableFlag.All}]";
+                ByteCodeVariableType flag = (ByteCodeVariableType)Value & ByteCodeVariableType.All;
+                if (flag != ByteCodeVariableType.None)
+                    s += $" : {flag}[{Value & ~(int)ByteCodeVariableType.All}]";
                 return s;
             }
         }
@@ -56,23 +57,28 @@ namespace SoftCircuits.Silk
     /// </summary>
     internal class ByteCodeWriter
     {
-        private List<ByteCodeEntry> ByteCodeEntries;
-        private List<int> Counters;
-        private LexicalAnalyzer Lexer;
+        private readonly List<ByteCodeEntry> ByteCodeEntries;
+        private readonly List<int> Counters;
+        private readonly LexicalAnalyzer Lexer;
 
         /// <summary>
         /// Instruction pointer. Returns the current write position.
         /// </summary>
         public int IP => ByteCodeEntries.Count;
 
+        /// <summary>
+        /// Constructs a new <see cref="ByteCodeWriter"/> instance.
+        /// </summary>
+        /// <param name="lexer">The <see cref="LexicalAnalyzer"/> being used to parse
+        /// the program.</param>
         public ByteCodeWriter(LexicalAnalyzer lexer)
         {
             // Bytecode size must not change (won't be able to read saved compiled data)
             Debug.Assert(sizeof(ByteCode) == sizeof(Int32));
             ByteCodeEntries = new List<ByteCodeEntry>();
             Counters = new List<int>();
-            Counters.Add(0);
             Lexer = lexer ?? throw new ArgumentNullException(nameof(lexer));
+            Reset();
         }
 
         /// <summary>
@@ -80,11 +86,13 @@ namespace SoftCircuits.Silk
         /// Returns the position at which this bytecode is written.
         /// </summary>
         /// <param name="bytecode">Bytecode to write.</param>
-        public int Write(ByteCode bytecode)
+        /// <param name="incrementCounter">If true, the write counter is incremented.</param>
+        public int Write(ByteCode bytecode, bool incrementCounter = true)
         {
             int ip = IP;
             ByteCodeEntries.Add(new ByteCodeEntry(bytecode, Lexer.LastTokenLine));
-            IncrementCount();
+            if (incrementCounter)
+                IncrementCount();
             return ip;
         }
 
@@ -93,11 +101,13 @@ namespace SoftCircuits.Silk
         /// Returns the position at which this value is written.
         /// </summary>
         /// <param name="value">Value to write.</param>
-        public int Write(int value)
+        /// <param name="incrementCounter">If true, the write counter is incremented.</param>
+        public int Write(int value, bool incrementCounter = true)
         {
             int ip = IP;
             ByteCodeEntries.Add(new ByteCodeEntry(value, Lexer.LastTokenLine));
-            IncrementCount();
+            if (incrementCounter)
+                IncrementCount();
             return ip;
         }
 
@@ -108,12 +118,14 @@ namespace SoftCircuits.Silk
         /// </summary>
         /// <param name="bytecode">Bytecode to write.</param>
         /// <param name="value">Value to write.</param>
-        public int Write(ByteCode bytecode, int value)
+        /// <param name="incrementCounter">If true, the write counter is incremented.</param>
+        public int Write(ByteCode bytecode, int value, bool incrementCounter = true)
         {
             int ip = IP;
             ByteCodeEntries.Add(new ByteCodeEntry(bytecode, Lexer.LastTokenLine));
             ByteCodeEntries.Add(new ByteCodeEntry(value, Lexer.LastTokenLine));
-            IncrementCount();
+            if (incrementCounter)
+                IncrementCount();
             return ip;
         }
 
@@ -157,13 +169,21 @@ namespace SoftCircuits.Silk
 
         #region Counters
 
+        // Counters are used to track the number of writes to the byte code
+        // This is helpful, for example, for knowing how many tokens are
+        // written in an expression
+
         /// <summary>
         /// Resets the current counter to zero.
         /// </summary>
         public void ResetCounter()
         {
             Debug.Assert(Counters.Count > 0);
+#if NETSTANDARD2_0
             Counters[Counters.Count - 1] = 0;
+#else
+            Counters[^1] = 0;
+#endif
         }
 
         /// <summary>
@@ -173,7 +193,11 @@ namespace SoftCircuits.Silk
         private void IncrementCount()
         {
             Debug.Assert(Counters.Count > 0);
+#if NETSTANDARD2_0
             Counters[Counters.Count - 1]++;
+#else
+            Counters[^1]++;
+#endif
         }
 
         /// <summary>
@@ -184,7 +208,11 @@ namespace SoftCircuits.Silk
             get
             {
                 Debug.Assert(Counters.Count > 0);
+#if NETSTANDARD2_0
                 return Counters[Counters.Count - 1];
+#else
+                return Counters[^1];
+#endif
             }
         }
 
@@ -208,16 +236,19 @@ namespace SoftCircuits.Silk
                 Counters.RemoveAt(Counters.Count - 1);
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Dumps the bytecode log to a file.
         /// </summary>
-        /// <param name="path">Name of file that contains the source code.</param>
-        public void WriteLogFile(string sourcePath, string logPath)
+        /// <param name="source">Source code.</param>
+        /// <param name="logPath">Name of created log file.</param>
+        /// <param name="sourcePath">Optional name of original source code file.</param>
+        public void WriteLogFile(string source, string logPath, string? sourcePath)
         {
-            // Read source file
-            string[] lines = File.ReadAllLines(sourcePath);
+            // Load source file
+            List<string> lines = ParseLines(source);
+
             // Must only be called after creating bytecodes
             if (ByteCodeEntries == null || ByteCodeEntries.Count == 0)
             {
@@ -226,27 +257,62 @@ namespace SoftCircuits.Silk
             }
             // Write log file
             int lastPrintedLine = 0;
-            using (StreamWriter file = new StreamWriter(logPath, false))
+
+            using StreamWriter writer = new(logPath, false);
+            writer.WriteLine("SILK Bytecode Listing - Created {0:d} {0:t}", DateTime.Now);
+            writer.WriteLine("Source File: {0}", sourcePath ?? "Not Available");
+            writer.WriteLine();
+            for (int i = 0; i < ByteCodeEntries.Count; i++)
             {
-                file.WriteLine("SILK Bytecode Listing - Created {0:d} {0:t}", DateTime.Now);
-                file.WriteLine("Source File: {0}", sourcePath);
-                file.WriteLine();
-                for (int i = 0; i < ByteCodeEntries.Count; i++)
+                while (lastPrintedLine < ByteCodeEntries[i].Line)
                 {
-                    while (lastPrintedLine < ByteCodeEntries[i].Line)
-                    {
-                        file.WriteLine("Line {0} : {1}", lastPrintedLine + 1, lines[lastPrintedLine].Trim());
-                        lastPrintedLine++;
-                    }
-                    file.WriteLine("\t{0:D5}: {1}", i, ByteCodeEntries[i].ToString());
-                }
-                // Write any trailing lines of source code
-                while (lastPrintedLine < lines.Length)
-                {
-                    file.WriteLine("Line {0} : {1}", lastPrintedLine + 1, lines[lastPrintedLine].Trim());
+                    writer.WriteLine("Line {0} : {1}", lastPrintedLine + 1, lines[lastPrintedLine].Trim());
                     lastPrintedLine++;
                 }
+                writer.WriteLine("\t{0:D5}: {1}", i, ByteCodeEntries[i].ToString());
             }
+            // Write any trailing lines of source code
+            while (lastPrintedLine < lines.Count)
+            {
+                writer.WriteLine("Line {0} : {1}", lastPrintedLine + 1, lines[lastPrintedLine].Trim());
+                lastPrintedLine++;
+            }
+        }
+
+        /// <summary>
+        /// Parses the given text into a list of lines. Attempts to correctly handle various
+        /// types of line breaks.
+        /// </summary>
+        /// <param name="source">The text to parse.</param>
+        /// <returns>The list of parsed lines.</returns>
+        private static List<string> ParseLines(string source)
+        {
+            List<string> lines = new();
+
+            if (source != null)
+            {
+                int pos = 0;
+                while (pos < source.Length)
+                {
+                    int nextPos;
+                    int eol = source.IndexOfAny(new[] { '\r', '\n' }, pos);
+                    if (eol >= 0)
+                    {
+                        nextPos = eol + 1;
+                        if (nextPos < source.Length && source[eol] == '\r' && source[nextPos] == '\n')
+                            nextPos++;
+                    }
+                    else nextPos = eol = source.Length;
+
+#if NETSTANDARD2_0
+                    lines.Add(source.Substring(pos, eol - pos));
+#else
+                    lines.Add(source[pos..eol]);
+#endif
+                    pos = nextPos;
+                }
+            }
+            return lines;
         }
 
         /// <summary>
@@ -267,6 +333,16 @@ namespace SoftCircuits.Silk
         {
             Debug.Assert(ByteCodeEntries != null && ByteCodeEntries.Count > 0);
             return ByteCodeEntries.Select(e => e.Line).ToArray();
+        }
+
+        /// <summary>
+        /// Clear and reset data.
+        /// </summary>
+        public void Reset()
+        {
+            ByteCodeEntries.Clear();
+            Counters.Clear();
+            Counters.Add(0);
         }
     }
 }

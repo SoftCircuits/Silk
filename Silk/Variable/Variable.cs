@@ -1,12 +1,20 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SoftCircuits.Silk
 {
+    [Flags]
+    internal enum CompilerFlag : byte
+    {
+        None = 0x0000,
+        ReadOnly = 0x0001,
+    }
+
     /// <summary>
     /// Represents a data variable.
     /// </summary>
@@ -16,8 +24,13 @@ namespace SoftCircuits.Silk
     /// </remarks>
     public class Variable : IEquatable<Variable>
     {
+        /// <summary>
+        /// Variable flags used by the compiler.
+        /// </summary>
+        internal CompilerFlag CompilerFlags { get; set; } = CompilerFlag.None;
+
         // Internal value
-        private Value Value;
+        internal Value Value { get; private set; }
 
         /// <summary>
         /// Constructs a variable with the value 0.
@@ -63,13 +76,16 @@ namespace SoftCircuits.Silk
         /// Creates an array variable of the specified size.
         /// </summary>
         /// <param name="size">Size of this array.</param>
-        public static Variable CreateList(int size) => new Variable(new ListValue(size));
+        public static Variable CreateList(int size) => new(new ListValue(size));
 
         #region SetValue
 
         /// <summary>
         /// Sets this variable to a string value.
         /// </summary>
+#if NET5_0
+        [MemberNotNull(nameof(Value))]
+#endif
         public void SetValue(string value)
         {
             if (Value is StringValue stringValue)
@@ -81,6 +97,9 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable to an integer value.
         /// </summary>
+#if NET5_0
+        [MemberNotNull(nameof(Value))]
+#endif
         public void SetValue(int value)
         {
             if (Value is IntegerValue integerValue)
@@ -93,6 +112,9 @@ namespace SoftCircuits.Silk
         /// Sets this variable to a floating-point value.
         /// </summary>
         /// <param name="value"></param>
+#if NET5_0
+        [MemberNotNull(nameof(Value))]
+#endif
         public void SetValue(double value)
         {
             if (Value is FloatValue floatValue)
@@ -104,6 +126,9 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable to a list with the given items.
         /// </summary>
+#if NET5_0
+        [MemberNotNull(nameof(Value))]
+#endif
         public void SetValue(IEnumerable<Variable> values)
         {
             if (Value is ListValue listValue)
@@ -117,20 +142,23 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable's value to the value of another variable.
         /// </summary>
+#if NET5_0
+        [MemberNotNull(nameof(Value))]
+#endif
         public void SetValue(Variable var)
         {
             switch (var.Type)
             {
-                case ValueType.String:
+                case VarType.String:
                     SetValue(var.ToString());
                     break;
-                case ValueType.Integer:
+                case VarType.Integer:
                     SetValue(var.ToInteger());
                     break;
-                case ValueType.Float:
+                case VarType.Float:
                     SetValue(var.ToFloat());
                     break;
-                case ValueType.List:
+                case VarType.List:
                     SetValue(var.GetList());
                     break;
                 default:
@@ -141,27 +169,26 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable's value from a token.
         /// </summary>
+#if NET5_0
+        [MemberNotNull(nameof(Value))]
+#endif
         internal void SetValue(Token token)
         {
-            switch (token.Type)
+            Value = token.Type switch
             {
-                case TokenType.String:
-                    Value = new StringValue(token.Value);
-                    break;
-                case TokenType.Integer:
-                    Value = new IntegerValue(token.Value);
-                    break;
-                case TokenType.Float:
-                    Value = new FloatValue(token.Value);
-                    break;
-                default:
-                    throw new Exception($"Attempted to convert {token.Type} token ({token.Value}) to variable.");
-            }
+                TokenType.String => new StringValue(token.Value),
+                TokenType.Integer => new IntegerValue(token.Value),
+                TokenType.Float => new FloatValue(token.Value),
+                _ => throw new Exception($"Attempted to convert {token.Type} token ({token.Value}) to variable."),
+            };
         }
 
         /// <summary>
         /// Sets this variable to the given value.
         /// </summary>
+#if NET5_0
+        [MemberNotNull(nameof(Value))]
+#endif
         internal void SetValue(Value value)
         {
             Debug.Assert(value != null);
@@ -175,12 +202,12 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Returns the this variable's current type.
         /// </summary>
-        public ValueType Type => Value.Type;
+        public VarType Type => Value.VarType;
 
         /// <summary>
         /// Returns true if this variable contains a list.
         /// </summary>
-        public bool IsList => Value.Type == ValueType.List;
+        public bool IsList => Value.VarType == VarType.List;
 
         /// <summary>
         /// Returns the number of items in this list. Returns 1 if this variable
@@ -203,7 +230,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Converts this variable to a string.
         /// </summary>
-        public override string ToString() => Value.ToString();
+        public override string ToString() => Value.ToString() ?? string.Empty;
 
         /// <summary>
         /// Converts this variable to an integer.
@@ -261,7 +288,20 @@ namespace SoftCircuits.Silk
 
         #endregion
 
+        #region Conversion operators
+
+        public static implicit operator int(Variable v) => v.ToInteger();
+        public static implicit operator double(Variable v) => v.ToFloat();
+        public static implicit operator string(Variable v) => v.ToString();
+
+        #endregion
+
         #region Comparisons
+
+        public int CompareTo(Variable var) => Value.CompareTo(var);
+        public int CompareTo(string var) => Value.CompareTo(var);
+        public int CompareTo(int var) => Value.CompareTo(var);
+        public int CompareTo(double var) => Value.CompareTo(var);
 
         public bool IsEqual(Variable var) => Value.IsEqual(var);
         public bool IsEqual(string var) => Value.IsEqual(var);
@@ -363,14 +403,14 @@ namespace SoftCircuits.Silk
 
         #region IEquatable
 
-        public override bool Equals(object value)
+        public override bool Equals(object? value)
         {
             return Equals(value as Variable);
         }
 
-        public bool Equals(Variable value)
+        public bool Equals(Variable? value)
         {
-            if (ReferenceEquals(value, null))
+            if (value is null)
                 return false;
             return Value.Equals(value.Value);
         }

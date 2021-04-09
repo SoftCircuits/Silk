@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -12,8 +12,8 @@ namespace SoftCircuits.Silk
     /// </summary>
     internal class ByteCodeReader
     {
-        private int[] ByteCodes;
-        private Stack<int> IPStack;
+        private readonly int[] ByteCodes;
+        private readonly Stack<int> IPStack;
 
         /// <summary>
         /// Instruction pointer (IP). Returns the current read position.

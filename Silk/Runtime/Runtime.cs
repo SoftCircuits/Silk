@@ -1,68 +1,91 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SoftCircuits.Silk
 {
     public class Runtime
     {
+        private CompiledProgram Program;
+
         private ByteCodeReader Reader;
-        private Function[] Functions;
-        private Variable[] Variables;
-        private Variable[] Literals;
         private Stack<RuntimeFunction> FunctionStack;
         private Stack<Variable> VarStack;
 
-        private object UserData;
+        private object? UserData;
+
+        /// <summary>
+        /// Initializes a new <see cref="Runtime"/> instance and prepares to execute the
+        /// given program.
+        /// </summary>
+        /// <param name="program">The program to prepare to execute.</param>
+        public Runtime(CompiledProgram program)
+        {
+            Reset(program);
+        }
+
+        /// <summary>
+        /// Resets this runtime instance to be ready to execute the given <see cref="CompiledProgram"/>.
+        /// </summary>
+        /// <param name="program">The program to prepare to execute.</param>
+#if NET5_0
+        [MemberNotNull(nameof(Program), nameof(Reader), nameof(FunctionStack), nameof(VarStack))]
+#endif
+        public void Reset(CompiledProgram program)
+        {
+            Program = program ?? throw new ArgumentNullException(nameof(program));
+            Reader = new ByteCodeReader(Program.GetByteCodes());
+            FunctionStack = new Stack<RuntimeFunction>();
+            VarStack = new Stack<Variable>();
+            UserData = null;
+        }
 
         /// <summary>
         /// Executes the given program.
         /// </summary>
-        /// <param name="program">Program to execute.</param>
         /// <returns>Returns a variable that contains the result of the program.</returns>
-        public Variable Execute(CompiledProgram program)
+        public Variable Execute()
         {
-            if (program == null)
-                throw new ArgumentNullException(nameof(program));
-            if (program.IsEmpty)
-                throw new Exception("Cannot execute empty program");
-
-            // Populate data
-            Reader = new ByteCodeReader(program.GetByteCodes());
-            Functions = program.GetFunctions();
-            Variables = program.GetVariables();
-            Literals = program.GetLiterals();
-            FunctionStack = new Stack<RuntimeFunction>();
-            VarStack = new Stack<Variable>();
+            Reader.GoTo(0);
+            FunctionStack.Clear();
+            VarStack.Clear();
             UserData = null;
 
             OnBegin();
 
-            // Initial bytecode is call to main() function
-            ByteCode bytecode = Reader.GetNext();
-            Debug.Assert(bytecode == ByteCode.ExecFunction);
-            int mainId = Reader.GetNextValue();
-            Debug.Assert(Functions[mainId] is UserFunction);
-            RuntimeFunction function = new RuntimeFunction(Functions[mainId] as UserFunction);
-
             try
             {
+                // Initial bytecodes are call to main() function
+                ByteCode bytecode = Reader.GetNext();
+                Debug.Assert(bytecode == ByteCode.ExecFunction);
+                int mainId = Reader.GetNextValue();
+
+                // Validate
+                if (bytecode != ByteCode.ExecFunction || Program.Functions[mainId] is not UserFunction userFunction)
+                    throw new Exception("Invalid bytecode program : Missing call to function main.");
+
+                RuntimeFunction function = new(userFunction);
+
                 // Execute this function
                 ExecuteFunction(function);
+
+                // Return result
+                return function.ReturnValue;
             }
             catch (Exception ex)
             {
                 // Include line-number information if possible
-                if (program.LineNumbers != null)
+                if (Program.LineNumbers != null)
                 {
-                    Debug.Assert(program.LineNumbers.Length == program.ByteCodes.Length);
+                    Debug.Assert(Program.LineNumbers.Length == Program.ByteCodes.Length);
                     int ip = (Reader.IP - 1);
-                    if (ip >= 0 && ip < program.LineNumbers.Length)
+                    if (ip >= 0 && ip < Program.LineNumbers.Length)
                     {
-                        string s = $"\"{ex.Message}\" exception on line {program.LineNumbers[ip]}. See inner exception for details.";
+                        string s = $"\"{ex.Message}\" exception on line {Program.LineNumbers[ip]}. See inner exception for details.";
                         throw new Exception(s, ex);
                     }
                 }
@@ -72,9 +95,6 @@ namespace SoftCircuits.Silk
             {
                 OnEnd();
             }
-
-            // Return result
-            return function.ReturnValue;
         }
 
         private void ExecuteFunction(RuntimeFunction function)
@@ -106,7 +126,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// ByteCode dispatch table
         /// </summary>
-        private static readonly Dictionary<ByteCode, Action<Runtime>> ByteCodeHandlerLookup = new Dictionary<ByteCode, Action<Runtime>>
+        private static readonly Dictionary<ByteCode, Action<Runtime>> ByteCodeHandlerLookup = new()
         {
             [ByteCode.Nop] = r => r.Nop(),
             [ByteCode.ExecFunction] = r => r.ExecFunction(),
@@ -115,6 +135,7 @@ namespace SoftCircuits.Silk
             [ByteCode.JumpIfFalse] = r => r.JumpIfFalse(),
             [ByteCode.Assign] = r => r.Assign(),
             [ByteCode.AssignListVariable] = r => r.AssignListVariable(),
+            [ByteCode.AssignListVariableMulti] = r => r.AssignListVariableMulti(),
         };
 
         private void Nop()
@@ -163,6 +184,9 @@ namespace SoftCircuits.Silk
             var.SetValue(VarStack.Pop());
         }
 
+        // Retained for backwards compatibility
+        // but now AssignListVariableMulti is used,
+        // which supports multiple indexes.
         private void AssignListVariable()
         {
             Variable array = GetVariable(Reader.GetNextValue());
@@ -177,6 +201,29 @@ namespace SoftCircuits.Silk
             var.SetValue(VarStack.Pop());
         }
 
+        private void AssignListVariableMulti()
+        {
+            bool result;
+
+            Variable variable = GetVariable(Reader.GetNextValue());
+            // Evaluate index(es)
+            int count = Reader.GetNextValue();
+            Debug.Assert(count > 0);
+            while (count > 0)
+            {
+                // Evaluate index
+                result = EvalExpression();
+                Debug.Assert(result);
+                Variable index = VarStack.Pop();
+                variable = variable.GetAt(index.ToInteger() - 1);
+                count--;
+            }
+            // Evaluate expression
+            result = EvalExpression();
+            Debug.Assert(result);
+            variable.SetValue(VarStack.Pop());
+        }
+
         #endregion
 
         #region Expression evaluator
@@ -184,7 +231,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// ByteCode evaluators dispatch table.
         /// </summary>
-        private static readonly Dictionary<ByteCode, Action<Runtime>> EvalHandlerLookup = new Dictionary<ByteCode, Action<Runtime>>
+        private static readonly Dictionary<ByteCode, Action<Runtime>> EvalHandlerLookup = new()
         {
             [ByteCode.EvalLiteral] = r => r.EvalLiteral(),
             [ByteCode.EvalVariable] = r => r.EvalVariable(),
@@ -210,6 +257,7 @@ namespace SoftCircuits.Silk
             [ByteCode.EvalIsGreaterThanOrEqual] = r => r.EvalIsGreaterThanOrEqual(),
             [ByteCode.EvalIsLessThan] = r => r.EvalIsLessThan(),
             [ByteCode.EvalIsLessThanOrEqual] = r => r.EvalIsLessThanOrEqual(),
+            [ByteCode.EvalListVariableMulti] = r => r.EvalListVariableMulti(),
         };
 
         /// <summary>
@@ -236,7 +284,7 @@ namespace SoftCircuits.Silk
         private void EvalLiteral()
         {
             // Must be copy to avoid modifying original
-            VarStack.Push(new Variable(Literals[Reader.GetNextValue()]));
+            VarStack.Push(new Variable(Program.Literals[Reader.GetNextValue()]));
         }
 
         private void EvalVariable()
@@ -257,7 +305,7 @@ namespace SoftCircuits.Silk
         private void EvalInitializeList()
         {
             int count = Reader.GetNextValue();
-            List<Variable> variables = new List<Variable>(count);
+            List<Variable> variables = new(count);
             for (int i = 0; i < count; i++)
             {
                 bool result = EvalExpression();
@@ -267,6 +315,9 @@ namespace SoftCircuits.Silk
             VarStack.Push(new Variable(variables));
         }
 
+        // Retained for backwards compatibility
+        // but now EvalListVariableMulti is used,
+        // which supports multiple indexes.
         private void EvalListVariable()
         {
             Variable array = GetVariable(Reader.GetNextValue());
@@ -277,11 +328,28 @@ namespace SoftCircuits.Silk
             VarStack.Push(array.GetAt(index.ToInteger() - 1));
         }
 
+        private void EvalListVariableMulti()
+        {
+            Variable variable = GetVariable(Reader.GetNextValue());
+            // Evaluate index(es)
+            int count = Reader.GetNextValue();
+            Debug.Assert(count > 0);
+            while (count > 0)
+            {
+                bool result = EvalExpression();
+                Debug.Assert(result);
+                Variable index = VarStack.Pop();
+                variable = variable.GetAt(index.ToInteger() - 1);
+                count--;
+            }
+            VarStack.Push(variable);
+        }
+
         private void EvalFunction()
         {
             // Get function
             int functionId = Reader.GetNextValue();
-            Function function = Functions[functionId];
+            Function function = Program.Functions[functionId];
 
             // Build arguments
             int argCount = Reader.GetNextValue();
@@ -296,7 +364,7 @@ namespace SoftCircuits.Silk
             if (function.IsIntrinsic)
             {
                 // Intrinsic functions are those defined from C# code
-                Variable returnValue = new Variable();
+                Variable returnValue = new();
                 // Run function
                 if (function is InternalFunction internalFunction)
                     internalFunction.Action(arguments, returnValue);
@@ -449,13 +517,13 @@ namespace SoftCircuits.Silk
 
         #region Events
 
-        public event EventHandler<BeginEventArgs> Begin;
-        public event EventHandler<EndEventArgs> End;
-        public event EventHandler<FunctionEventArgs> Function;
+        public event EventHandler<BeginEventArgs>? Begin;
+        public event EventHandler<EndEventArgs>? End;
+        public event EventHandler<FunctionEventArgs>? Function;
 
         internal void OnBegin()
         {
-            BeginEventArgs e = new BeginEventArgs
+            BeginEventArgs e = new()
             {
                 UserData = UserData,
             };
@@ -465,7 +533,7 @@ namespace SoftCircuits.Silk
 
         internal void OnEnd()
         {
-            EndEventArgs e = new EndEventArgs
+            EndEventArgs e = new()
             {
                 UserData = UserData,
             };
@@ -475,13 +543,7 @@ namespace SoftCircuits.Silk
 
         internal void OnFunction(string name, Variable[] parameters, Variable returnValue)
         {
-            FunctionEventArgs e = new FunctionEventArgs
-            {
-                Name = name,
-                ReturnValue = returnValue,
-                Parameters = parameters,
-                UserData = UserData,
-            };
+            FunctionEventArgs e = new(name, parameters, returnValue, UserData);
             Function?.Invoke(this, e);
             UserData = e.UserData;
         }
@@ -493,7 +555,7 @@ namespace SoftCircuits.Silk
         private Variable GetVariable(int varId)
         {
             if (ByteCodes.IsGlobalVariable(varId))
-                return Variables[ByteCodes.GetVariableIndex(varId)];
+                return Program.Variables[ByteCodes.GetVariableIndex(varId)];
             var context = GetFunctionContext();
             if (ByteCodes.IsLocalVariable(varId))
                 return context.Variables[ByteCodes.GetVariableIndex(varId)];

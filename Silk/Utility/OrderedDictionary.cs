@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace SoftCircuits.Silk
@@ -15,7 +16,7 @@ namespace SoftCircuits.Silk
     /// To minimize data duplication, only the index into the list is stored
     /// in the dictionary with the key.
     /// </remarks>
-    internal class OrderedDictionary<TKey, TValue> : IEnumerable<TValue>
+    internal class OrderedDictionary<TKey, TValue> : IEnumerable<TValue> where TKey : notnull
     {
         private readonly Dictionary<TKey, int> IndexLookup;
         private readonly List<TValue> Items;
@@ -63,7 +64,11 @@ namespace SoftCircuits.Silk
             set => Items[IndexLookup[key]] = value;
         }
 
+#if NETSTANDARD2_0
         public bool TryGetValue(TKey key, out TValue value)
+#else
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+#endif
         {
             if (IndexLookup.TryGetValue(key, out int index))
             {
@@ -86,9 +91,9 @@ namespace SoftCircuits.Silk
 
         public int IndexOf(TKey key) => IndexLookup.TryGetValue(key, out int index) ? index : -1;
 
-        public List<TKey> Keys => new List<TKey>(IndexLookup.Keys);
+        public List<TKey> Keys => new(IndexLookup.Keys);
 
-        public List<TValue> Values => new List<TValue>(Items);      // Don't return original list
+        public List<TValue> Values => new(Items);      // Don't return original list
 
         public IEnumerable<KeyValuePair<TKey, TValue>> GetKeyValuePairs() => IndexLookup.Keys.Select(k => new KeyValuePair<TKey, TValue>(k, Items[IndexLookup[k]]));
 

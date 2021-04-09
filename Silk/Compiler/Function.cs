@@ -1,8 +1,10 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Various representations of functions.
@@ -98,13 +100,17 @@ namespace SoftCircuits.Silk
         public OrderedDictionary<string, Label> Labels { get; set; }
         public OrderedDictionary<string, Variable> Variables { get; set; }
         public OrderedDictionary<string, Variable> Parameters { get; set; }
+        public Stack<LoopContext> LoopContexts { get; private set; }
+
+        public LoopContext? GetLoopContext() => (LoopContexts.Count > 0) ? LoopContexts.Peek() : null;
 
         public CompileTimeUserFunction(string name, int ip)
             : base(name, ip)
         {
-            Labels = new OrderedDictionary<string, Label>(StringComparer.OrdinalIgnoreCase);
-            Variables = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
-            Parameters = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
+            Labels = new(StringComparer.OrdinalIgnoreCase);
+            Variables = new(StringComparer.OrdinalIgnoreCase);
+            Parameters = new(StringComparer.OrdinalIgnoreCase);
+            LoopContexts = new();
         }
 
         /// <summary>
@@ -117,13 +123,13 @@ namespace SoftCircuits.Silk
             // First search parameters
             int index = Parameters.IndexOf(name);
             if (index != -1)
-                return index | (int)ByteCodeVariableFlag.Parameter;
+                return index | (int)ByteCodeVariableType.Parameter;
             // Next search local variables
             index = Variables.IndexOf(name);
             if (index != -1)
-                return index | (int)ByteCodeVariableFlag.Local;
+                return index | (int)ByteCodeVariableType.Local;
             // Variable not defined; create it
-            return Variables.Add(name, new Variable()) | (int)ByteCodeVariableFlag.Local;
+            return Variables.Add(name, new Variable()) | (int)ByteCodeVariableType.Local;
         }
     }
 
@@ -149,7 +155,11 @@ namespace SoftCircuits.Silk
         /// </summary>
         /// <param name="count">Argument count.</param>
         /// <param name="message">Set to description of how the count is invalid if this method returns false.</param>
+#if NETSTANDARD2_0
         internal bool IsParameterCountValid(int count, out string message)
+#else
+        internal bool IsParameterCountValid(int count, [NotNullWhen(false)] out string? message)
+#endif
         {
             message = null;
 

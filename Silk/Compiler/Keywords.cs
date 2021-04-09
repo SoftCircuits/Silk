@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -20,6 +20,8 @@ namespace SoftCircuits.Silk
         Else,
         While,
         For,
+        Break,
+        Continue,
         // Keywords part of other statements/expressions
         And,
         Or,
@@ -34,7 +36,7 @@ namespace SoftCircuits.Silk
     /// </summary>
     internal static class Keywords
     {
-        private static readonly Dictionary<string, Keyword> KeywordLookup = new Dictionary<string, Keyword>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, Keyword> KeywordLookup = new(StringComparer.OrdinalIgnoreCase)
         {
             ["var"] = Keyword.Var,
             ["goto"] = Keyword.GoTo,
@@ -43,6 +45,8 @@ namespace SoftCircuits.Silk
             ["else"] = Keyword.Else,
             ["while"] = Keyword.While,
             ["for"] = Keyword.For,
+            ["break"] = Keyword.Break,
+            ["continue"] = Keyword.Continue,
             ["to"] = Keyword.To,
             ["step"] = Keyword.Step,
         };

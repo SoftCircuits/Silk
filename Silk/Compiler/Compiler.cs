@@ -1,14 +1,20 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SoftCircuits.Silk
 {
+    /// <summary>
+    /// Class that builds a SILK program from SILK source code. The source code is
+    /// compiled to byte code that can then be run by the runtime.
+    /// </summary>
     public partial class Compiler
     {
         /// <summary>
@@ -22,6 +28,16 @@ namespace SoftCircuits.Silk
         /// default.
         /// </summary>
         public bool CreateLogFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the log file created by the Compile and
+        /// <see cref="CompileSource(string, out CompiledProgram?)"/> methods when
+        /// <see cref="CreateLogFile"/> is true. If this property is not set, the name used for the
+        /// log file is the same as the source file with a LOG file extension. If this property is
+        /// not set and no source file is provided, an exception will occur when
+        /// <see cref="CreateLogFile"/> is true.
+        /// </summary>
+        public string? LogFile { get; set; }
 
         /// <summary>
         /// Gets or sets whether line numbers are included in the generated
@@ -43,38 +59,270 @@ namespace SoftCircuits.Silk
         /// </summary>
         public List<Error> Errors { get; private set; }
 
-        private OrderedDictionary<string, IntrinsicFunction> IntrinsicFunctions;
-        private OrderedDictionary<string, Variable> IntrinsicVariables;
-        private OrderedDictionary<string, Function> Functions;
-        private OrderedDictionary<string, Variable> Variables;
-        private List<Variable> Literals;
-        private LexicalAnalyzer Lexer;
-        private ByteCodeWriter Writer;
-        private CompileTimeUserFunction CurrentFunction;
-        private bool InFunction => (CurrentFunction != null);
+        private readonly OrderedDictionary<string, IntrinsicFunction> IntrinsicFunctions;
+        private readonly OrderedDictionary<string, Variable> IntrinsicVariables;
+        private readonly OrderedDictionary<string, Function> Functions;
+        private readonly OrderedDictionary<string, Variable> Variables;
+        private readonly List<Variable> Literals;
+        private readonly LexicalAnalyzer Lexer;
+        private readonly ByteCodeWriter Writer;
+        private CompileTimeUserFunction? CurrentFunction;
         private bool InHeader;
 
+        // TODO:
+        private string? SourceFile;
+
+
+#if NET5_0
+        [MemberNotNullWhen(true, nameof(CurrentFunction))]
+#endif
+        private bool InFunction => (CurrentFunction != null);
+
+        /// <summary>
+        /// Constructs a new <see cref="Compiler"/> instance.
+        /// </summary>
         public Compiler()
         {
             IntrinsicFunctions = new OrderedDictionary<string, IntrinsicFunction>(StringComparer.OrdinalIgnoreCase);
             IntrinsicVariables = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
-            MaxErrors = 30;
+            MaxErrors = 45;
             CreateLogFile = false;
+            LogFile = null;
             EnableLineNumbers = true;
             EnableInternalFunctions = true;
-        }
 
-        public bool Compile(string path, out CompiledProgram program)
-        {
             Functions = new OrderedDictionary<string, Function>(StringComparer.OrdinalIgnoreCase);
             Variables = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
             Literals = new List<Variable>();
-            Lexer = new LexicalAnalyzer(this);
+            Lexer = new LexicalAnalyzer();
             Lexer.Error += Lexer_Error;
             Writer = new ByteCodeWriter(Lexer);
+            Errors = new List<Error>();
+        }
+
+        /// <summary>
+        /// Compiles the source code in the specified file to byte codes.
+        /// </summary>
+        /// <param name="path">Name of the file that contains the source code to compile.</param>
+        /// <param name="program">If successful, returns the compiled program.</param>
+        /// <returns>True if successful, false if there were compile errors.</returns>
+#if NETSTANDARD2_0
+        public bool Compile(string path, out CompiledProgram program)
+#else
+        public bool Compile(string path, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            SourceFile = path;
+            string source;
+            using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read))
+            using (StreamReader reader = new(stream, Encoding.UTF8, true))
+            {
+                source = reader.ReadToEnd();
+            }
+            return InternalCompile(source, out program);
+
+        }
+
+        /// <summary>
+        /// Compiles the source code in the specified file to byte codes.
+        /// </summary>
+        /// <param name="path">Name of the file that contains the source code to compile.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="program">If successful, returns the compiled program.</param>
+        /// <returns>True if successful, false if there were compile errors.</returns>
+#if NETSTANDARD2_0
+        public bool Compile(string path, Encoding encoding, out CompiledProgram program)
+#else
+        public bool Compile(string path, Encoding encoding, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            SourceFile = path;
+            string source;
+            using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read))
+            using (StreamReader reader = new(stream, encoding, true))
+            {
+                source = reader.ReadToEnd();
+            }
+            return InternalCompile(source, out program);
+        }
+
+        /// <summary>
+        /// Compiles the source code in the specified file to byte codes.
+        /// </summary>
+        /// <param name="path">Name of the file that contains the source code to compile.</param>
+        /// <param name="detectEncodingFromByteOrderMarks">Set to true to look for byte order marks at the beginning
+        /// of the file.</param>
+        /// <param name="program">If successful, returns the compiled program.</param>
+        /// <returns>True if successful, false if there were compile errors.</returns>
+#if NETSTANDARD2_0
+        public bool Compile(string path, bool detectEncodingFromByteOrderMarks, out CompiledProgram program)
+#else
+        public bool Compile(string path, bool detectEncodingFromByteOrderMarks, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            SourceFile = path;
+            string source;
+            using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read))
+            using (StreamReader reader = new(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks))
+            {
+                source = reader.ReadToEnd();
+            }
+            return InternalCompile(source, out program);
+        }
+
+        /// <summary>
+        /// Compiles the source code in the specified file to byte codes.
+        /// </summary>
+        /// <param name="path">Name of the file that contains the source code to compile.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="detectEncodingFromByteOrderMarks">Set to true to look for byte order marks at the beginning
+        /// of the file.</param>
+        /// <param name="program">If successful, returns the compiled program.</param>
+        /// <returns>True if successful, false if there were compile errors.</returns>
+#if NETSTANDARD2_0
+        public bool Compile(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, out CompiledProgram program)
+#else
+        public bool Compile(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            SourceFile = path;
+            string source;
+            using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read))
+            using (StreamReader reader = new(stream, encoding, detectEncodingFromByteOrderMarks))
+            {
+                source = reader.ReadToEnd();
+            }
+            return InternalCompile(source, out program);
+        }
+
+        /// <summary>
+        /// Compiles the source code in the specified file to byte codes.
+        /// </summary>
+        /// <param name="stream">A stream that contains the source code to compile.</param>
+        /// <param name="program">If successful, returns the compiled program.</param>
+        /// <returns>True if successful, false if there were compile errors.</returns>
+#if NETSTANDARD2_0
+        public bool Compile(Stream stream, out CompiledProgram program)
+#else
+        public bool Compile(Stream stream, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            SourceFile = null;
+            string source;
+            using (StreamReader reader = new(stream, Encoding.UTF8, true))
+            {
+                source = reader.ReadToEnd();
+            }
+            return InternalCompile(source, out program);
+        }
+
+        /// <summary>
+        /// Compiles the source code in the specified file to byte codes.
+        /// </summary>
+        /// <param name="stream">A stream that contains the source code to compile.</param>
+        /// <param name="encoding">The charcter encoding to use.</param>
+        /// <param name="program">If successful, returns the compiled program.</param>
+        /// <returns>True if successful, false if there were compile errors.</returns>
+#if NETSTANDARD2_0
+        public bool Compile(Stream stream, Encoding encoding, out CompiledProgram program)
+#else
+        public bool Compile(Stream stream, Encoding encoding, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            SourceFile = null;
+            string source;
+            using (StreamReader reader = new(stream, encoding, true))
+            {
+                source = reader.ReadToEnd();
+            }
+            return InternalCompile(source, out program);
+        }
+
+        /// <summary>
+        /// Compiles the source code in the specified file to byte codes.
+        /// </summary>
+        /// <param name="stream">A stream that contains the source code to compile.</param>
+        /// <param name="detectEncodingFromByteOrderMarks">Set to true to look for byte order marks at the beginning
+        /// of the file.</param>
+        /// <param name="program">If successful, returns the compiled program.</param>
+        /// <returns>True if successful, false if there were compile errors.</returns>
+#if NETSTANDARD2_0
+        public bool Compile(Stream stream, bool detectEncodingFromByteOrderMarks, out CompiledProgram program)
+#else
+        public bool Compile(Stream stream, bool detectEncodingFromByteOrderMarks, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            SourceFile = null;
+            string source;
+            using (StreamReader reader = new(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks))
+            {
+                source = reader.ReadToEnd();
+            }
+            return InternalCompile(source, out program);
+        }
+
+        /// <summary>
+        /// Compiles the source code in the specified file to byte codes.
+        /// </summary>
+        /// <param name="stream">A stream that contains the source code to compile.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="detectEncodingFromByteOrderMarks">Set to true to look for byte order marks at the beginning
+        /// of the file.</param>
+        /// <param name="program">If successful, returns the compiled program.</param>
+        /// <returns>True if successful, false if there were compile errors.</returns>
+#if NETSTANDARD2_0
+        public bool Compile(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, out CompiledProgram program)
+#else
+        public bool Compile(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            SourceFile = null;
+            string source;
+            using (StreamReader reader = new(stream, encoding, detectEncodingFromByteOrderMarks))
+            {
+                source = reader.ReadToEnd();
+            }
+            return InternalCompile(source, out program);
+        }
+
+        /// <summary>
+        /// Compiles the source code in the specified file to byte codes.
+        /// </summary>
+        /// <param name="source">The source code to compile.</param>
+        /// <param name="program">If successful, returns the compiled program.</param>
+        /// <returns>True if successful, false if there were compile errors.</returns>
+#if NETSTANDARD2_0
+        public bool CompileSource(string source, out CompiledProgram program)
+#else
+        public bool CompileSource(string source, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            SourceFile = null;
+            return InternalCompile(source, out program);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="program"></param>
+        /// <returns></returns>
+#if NETSTANDARD2_0
+        private bool InternalCompile(string source, out CompiledProgram program)
+#else
+        private bool InternalCompile(string source, [NotNullWhen(true)] out CompiledProgram? program)
+#endif
+        {
+            Functions.Clear();
+            Variables.Clear();
+            Literals.Clear();
+            Lexer.Reset();
+            Writer.Reset();
+
             InHeader = true;
             CurrentFunction = null;
-            Errors = new List<Error>();
+            Errors.Clear();
+
             program = null;
 
             // Add intrinsic functions to function collection
@@ -89,8 +337,9 @@ namespace SoftCircuits.Silk
 
             try
             {
-                // Load file and initialize lexer
-                Lexer.Reset(File.ReadAllText(path));
+                // Prepare to parse source code
+                Lexer.Reset(source);
+
                 // Write bytecodes to call function main.
                 // Also causes error if main function is not defined
                 Writer.Write(ByteCode.ExecFunction, GetFunctionId(Function.Main));
@@ -124,19 +373,28 @@ namespace SoftCircuits.Silk
             // Done if compile failed
             if (Errors.Count > 0)
                 return false;
+
             // Implement logging
             if (CreateLogFile)
-                Writer.WriteLogFile(path, Path.ChangeExtension(path, "log"));
-            // Return compiled data
-            program = new CompiledProgram
             {
-                ByteCodes = Writer.GetBytecodes(),
-                Functions = Functions.Values.Select(f =>
+                string? logFile = LogFile;
+                if (logFile == null)
+                {
+                    if (SourceFile != null)
+                        logFile = Path.ChangeExtension(SourceFile, "log");
+                    else
+                        throw new InvalidOperationException("Unable to create log file : LogFile must be set when no source file name is provided.");
+                }
+                Writer.WriteLogFile(source, logFile, SourceFile);
+            }
+
+            // Return compiled data
+            program = new CompiledProgram(Writer.GetBytecodes(),
+                Functions.Values.Select(f =>
                     (f is CompileTimeUserFunction userFunction) ? new UserFunction(userFunction) : f).ToArray(),
-                Variables = Variables.Values.ToArray(),
-                Literals = Literals.ToArray(),
-                LineNumbers = EnableLineNumbers ? Writer.GetLineNumbers() : null,
-            };
+                Variables.Values.ToArray(),
+                Literals.ToArray(),
+                EnableLineNumbers ? Writer.GetLineNumbers() : null);
             return true;
         }
 
@@ -198,25 +456,40 @@ namespace SoftCircuits.Silk
                         NextLine();
                         return;
                     }
-                    Writer.Write(ByteCode.AssignListVariable, GetVariableId(token.Value));
-                    // Parse list index
-                    if (!ParseExpression())
-                        return;
-                    token = Lexer.GetNext();
-                    if (token.Type != TokenType.RightBracket)
+
+                    Writer.Write(ByteCode.AssignListVariableMulti, GetVariableId(token.Value));
+                    int subscriptsIP = Writer.Write(0);    //
+                    int subscripts = 0;
+
+                    do
                     {
-                        Error(ErrorCode.ExpectedRightBracket, token);
-                        NextLine();
-                        return;
-                    }
-                    // Parse equal sign
-                    token = Lexer.GetNext();
+                        // Parse list index
+                        if (!ParseExpression())
+                            return;
+                        token = Lexer.GetNext();
+                        if (token.Type != TokenType.RightBracket)
+                        {
+                            Error(ErrorCode.ExpectedRightBracket, token);
+                            NextLine();
+                            return;
+                        }
+                        subscripts++;
+
+                        // Get next token
+                        token = Lexer.GetNext();
+
+                    } while (token.Type == TokenType.LeftBracket);
+
+                    // Set index count
+                    Writer.WriteAt(subscriptsIP, subscripts);
+
                     if (token.Type != TokenType.Equal)
                     {
                         Error(ErrorCode.ExpectedEquals, token);
                         NextLine();
                         return;
                     }
+
                     // Parse expression
                     if (!ParseExpression())
                         return;
@@ -230,7 +503,15 @@ namespace SoftCircuits.Silk
                         NextLine();
                         return;
                     }
-                    Writer.Write(ByteCode.Assign, GetVariableId(token.Value));
+                    // Test for read-only
+                    int varId = GetVariableId(token.Value);
+                    if (IsReadOnly(varId))
+                    {
+                        Error(ErrorCode.AssignToReadOnlyVariable, token);
+                        NextLine();
+                        return;
+                    }
+                    Writer.Write(ByteCode.Assign, varId);
                     if (!ParseExpression())
                         return;
                     VerifyEndOfLine();
@@ -240,7 +521,7 @@ namespace SoftCircuits.Silk
                     {
                         // Function call
                         int functionId = GetFunctionId(token.Value);
-                        Function function = Functions[functionId];
+                        Function? function = Functions[functionId];
                         Writer.Write(ByteCode.ExecFunction, functionId);
                         // Next token might be part of argument expression
                         Lexer.UngetToken(nextToken);
@@ -344,7 +625,7 @@ namespace SoftCircuits.Silk
         /// </summary>
         /// <param name="function">Function being called. May be null for user
         /// functions. Used to verify argument count for intrinsic functions.</param>
-        private bool ParseFunctionArguments(Function function, bool usingParentheses)
+        private bool ParseFunctionArguments(Function? function, bool usingParentheses)
         {
             Token token;
             int count = 0;
@@ -380,7 +661,7 @@ namespace SoftCircuits.Silk
             // (May be null for user functions not yet defined)
             if (function is IntrinsicFunction intrinsicFunction)
             {
-                if (!intrinsicFunction.IsParameterCountValid(count, out string error))
+                if (!intrinsicFunction.IsParameterCountValid(count, out string? error))
                 {
                     Error(ErrorCode.WrongNumberOfArguments, error);
                     return false;
@@ -391,7 +672,7 @@ namespace SoftCircuits.Silk
             return true;
         }
 
-        #region Function/Variable/Literal/Labels handling
+#region Function/Variable/Literal/Labels handling
 
         /// <summary>
         /// Registers an intrinsic function with the compiler. If the program calls this function at runtime,
@@ -420,7 +701,8 @@ namespace SoftCircuits.Silk
         /// </summary>
         /// <param name="name">Variable name.</param>
         /// <param name="variable">Variable value.</param>
-        public void RegisterVariable(string name, Variable variable)
+        /// <param name="readOnly">If true, this variable will be readonly.</param>
+        public void RegisterVariable(string name, Variable variable, bool readOnly = true)
         {
             // Validate variable name
             if (!Keywords.IsValidSymbolName(name))
@@ -432,6 +714,8 @@ namespace SoftCircuits.Silk
             if (IntrinsicVariables.IndexOf(name) >= 0)
                 throw new Exception($"An variable with the name \"{name}\" has already been added.");
             // Add predefined variable
+            if (readOnly)
+                variable.CompilerFlags = CompilerFlag.ReadOnly;
             IntrinsicVariables.Add(name, variable);
         }
 
@@ -445,7 +729,8 @@ namespace SoftCircuits.Silk
             if (index >= 0)
                 return index;
             // Create null placeholder if function not defined
-            return Functions.Add(name, null);
+            // Will detect error later if still null
+            return Functions.Add(name, null!);
         }
 
         /// <summary>
@@ -457,7 +742,6 @@ namespace SoftCircuits.Silk
         /// <param name="createIfNeeded">If true, the variable will be created if it doesn't exist.</param>
         internal int GetVariableId(string name, bool createIfNeeded = true)
         {
-            //UserFunctionEx function = CurrentFunction;
             int index;
 
             // Search local variables
@@ -466,22 +750,22 @@ namespace SoftCircuits.Silk
                 Debug.Assert(CurrentFunction != null);
                 index = CurrentFunction.Parameters.IndexOf(name);
                 if (index >= 0)
-                    return index | (int)ByteCodeVariableFlag.Parameter;
+                    return index | (int)ByteCodeVariableType.Parameter;
                 index = CurrentFunction.Variables.IndexOf(name);
                 if (index >= 0)
-                    return index | (int)ByteCodeVariableFlag.Local;
+                    return index | (int)ByteCodeVariableType.Local;
             }
             // Search global variables
             index = Variables.IndexOf(name);
             if (index >= 0)
-                return index | (int)ByteCodeVariableFlag.Global;
+                return index | (int)ByteCodeVariableType.Global;
             // Variable not found
             if (createIfNeeded)
             {
                 if (InHeader)
                 {
                     index = Variables.Add(name, new Variable());
-                    return index | (int)ByteCodeVariableFlag.Global;
+                    return index | (int)ByteCodeVariableType.Global;
                 }
                 else if (InFunction)
                 {
@@ -491,6 +775,18 @@ namespace SoftCircuits.Silk
                 throw new Exception("Variable referenced outside of header or function!");
             }
             else return -1;
+        }
+
+        /// <summary>
+        /// Determines if the specified variables ID refers to a read-only variable.
+        /// </summary>
+        /// <param name="varId">ID of the variable to check.</param>
+        /// <returns>If true, the variable is read-only.</returns>
+        internal bool IsReadOnly(int varId)
+        {
+            if (ByteCodes.IsGlobalVariable(varId))
+                return Variables[ByteCodes.GetVariableIndex(varId)].CompilerFlags.HasFlag(CompilerFlag.ReadOnly);
+            return false;
         }
 
         /// <summary>
@@ -518,7 +814,7 @@ namespace SoftCircuits.Silk
         {
             // Get or create label
             Debug.Assert(InFunction);
-            if (!CurrentFunction.Labels.TryGetValue(name, out Label label))
+            if (!CurrentFunction.Labels.TryGetValue(name, out Label? label))
             {
                 label = new Label(name);
                 CurrentFunction.Labels.Add(name, label);
@@ -536,30 +832,32 @@ namespace SoftCircuits.Silk
         /// Adds a label.
         /// </summary>
         /// <param name="name">Label name.</param>
-        /// <param name="ip">Label address</param>
+        /// <param name="ip">Label address.</param>
         internal void AddLabel(string name, int ip)
         {
-            // Get or create label
             Debug.Assert(InFunction);
-            if (CurrentFunction.Labels.TryGetValue(name, out Label label))
+
+            if (CurrentFunction.Labels.TryGetValue(name, out Label? label))
             {
+                // Add already referenced label
                 if (label.IP.HasValue)
                 {
+                    // Label already defined
                     Error(ErrorCode.DuplicateLabel, name.MakeQuoted());
                     return;
                 }
                 label.IP = ip;
+
+                // Fixup forward references to this label
+                foreach (int location in label.FixUpIPs)
+                    Writer.WriteAt(location, label.IP.Value);
+                label.FixUpIPs.Clear();
             }
             else
             {
-                label = new Label(name, ip);
-                CurrentFunction.Labels.Add(name, label);
+                // Add unreferenced label
+                CurrentFunction.Labels.Add(name, new(name, ip));
             }
-            // Test if label has already been defined
-            // Fix up any forward references
-            foreach (int location in label.FixUpIPs)
-                Writer.WriteAt(location, label.IP.Value);
-            label.FixUpIPs.Clear();
         }
 
         private bool AddUserFunction(string name, CompileTimeUserFunction userFunction)
@@ -568,7 +866,8 @@ namespace SoftCircuits.Silk
             if (index >= 0)
             {
                 // Let user set undefined functions, or override intrinsic ones
-                if (Functions[index] == null || Functions[index].IsIntrinsic)
+                var function = Functions[index];
+                if (function == null || function.IsIntrinsic)
                 {
                     Functions[index] = userFunction;
                     return true;
@@ -583,46 +882,9 @@ namespace SoftCircuits.Silk
             return true;
         }
 
-        #endregion
+#endregion
 
-        #region Error handling
-
-        internal void Error(ErrorCode code, ErrorLevel level = ErrorLevel.Error)
-        {
-            Errors.Add(new Error(level, code, Lexer.LastTokenLine));
-            CheckTooManyErrors();
-        }
-
-        internal void Error(ErrorCode code, Token token, ErrorLevel level = ErrorLevel.Error)
-        {
-            Errors.Add(new Error(level, code, token.Value.MakeQuoted(), Lexer.LastTokenLine));
-            CheckTooManyErrors();
-        }
-
-        internal void Error(ErrorCode code, string description, ErrorLevel level = ErrorLevel.Error)
-        {
-            Errors.Add(new Error(level, code, description, Lexer.LastTokenLine));
-            CheckTooManyErrors();
-        }
-
-        internal void Error(ErrorCode code, Token token, string description, ErrorLevel level = ErrorLevel.Error)
-        {
-            Errors.Add(new Error(level, code, description, Lexer.LastTokenLine));
-            CheckTooManyErrors();
-        }
-
-        private void CheckTooManyErrors()
-        {
-            if (Errors.Count >= MaxErrors)
-            {
-                Errors.Add(new Error(ErrorLevel.FatalError, ErrorCode.TooManyErrors, Lexer.CurrentLine));
-                throw new TooManyErrorsException();
-            }
-        }
-
-        #endregion
-
-        #region Support methods
+#region Parsing support
 
         /// <summary>
         /// Checks if there are any other tokens on the current line. If another token is
@@ -652,7 +914,38 @@ namespace SoftCircuits.Silk
             } while (token.Type != TokenType.EndOfLine && token.Type != TokenType.EndOfFile);
         }
 
-        private void Lexer_Error(object sender, ErrorEventArgs e)
+#endregion
+
+#region Error handling
+
+        internal void Error(ErrorCode code, ErrorLevel level = ErrorLevel.Error)
+        {
+            Errors.Add(new Error(level, code, Lexer.LastTokenLine));
+            CheckTooManyErrors();
+        }
+
+        internal void Error(ErrorCode code, Token token, ErrorLevel level = ErrorLevel.Error)
+        {
+            Errors.Add(new Error(level, code, token.Value.MakeQuoted(), Lexer.LastTokenLine));
+            CheckTooManyErrors();
+        }
+
+        internal void Error(ErrorCode code, string description, ErrorLevel level = ErrorLevel.Error)
+        {
+            Errors.Add(new Error(level, code, description, Lexer.LastTokenLine));
+            CheckTooManyErrors();
+        }
+
+        private void CheckTooManyErrors()
+        {
+            if (Errors.Count >= MaxErrors)
+            {
+                Errors.Add(new Error(ErrorLevel.FatalError, ErrorCode.TooManyErrors, Lexer.CurrentLine));
+                throw new TooManyErrorsException();
+            }
+        }
+
+        private void Lexer_Error(object? sender, ErrorEventArgs e)
         {
             if (e.Token != null)
                 Error(e.ErrorCode, e.Token);
@@ -660,7 +953,7 @@ namespace SoftCircuits.Silk
                 Error(e.ErrorCode);
         }
 
-        #endregion
+#endregion
 
     }
 }

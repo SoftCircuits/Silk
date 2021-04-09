@@ -1,5 +1,16 @@
-///////////////////////////////////////////////////////////////
-// Silk - Manelbrot example script
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+// Licensed under the MIT license.
+//
+using SilkPlatforms;
+
+namespace SilkExamples.Examples
+{
+    public class MandelbrotExample : IExample
+    {
+        public string Description => "Mandelbrot Example";
+
+        public string SourceCode => @"///////////////////////////////////////////////////////////////
+// Silk - Mandelbrot example script
 // Adapted from:
 // http://csharphelper.com/blog/2014/07/draw-a-mandelbrot-set-fractal-in-c/
 //
@@ -78,7 +89,7 @@ AdjustAspect()
     want_aspect = (m_Ymax - m_Ymin) / (m_Xmax - m_Xmin)
     picCanvas_aspect = float(Height()) / float(Width())
     if (want_aspect > picCanvas_aspect)
-    {xxx
+    {
         // The selected area is too tall and thin.
         // Make it wider.
         width = (m_Ymax - m_Ymin) / picCanvas_aspect
@@ -94,5 +105,9 @@ AdjustAspect()
         mid = (m_Ymin + m_Ymax) / 2
         m_Ymin = mid - height / 2
         m_Ymax = mid + height / 2
+    }
+}";
+
+        public SilkPlatform Platform { get; init; } = SilkPlatform.Graphics;
     }
 }

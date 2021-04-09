@@ -1,7 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
+    <Nullable>annotations</Nullable>
+    <Nullable Condition="'$(TargetFramework)' == 'net5.0'">enable</Nullable>
+    <LangVersion>9.0</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Authors>Jonathan Wood</Authors>
@@ -16,20 +19,39 @@ Finally, the runtime component can execute a compiled program.
 
 The main power of this library is that it allows you to register your own functions and variables with the compiler and those functions and variables can be called from the Silk program. When one of your registered functions is called, the Function event is raised, allowing the host application to provide key functionality specific to the host application's domain.
 
-The Silk language itself is designed to be relatively easy to learn. It has no semicolons or other excessive punctuation, it's not case sensitive and is very flexible about expressions involving mixed data types.</Description>
-    <Copyright>Copyright © 2019-2020 SoftCircuits</Copyright>
+The Silk language itself is designed to be relatively easy to learn. It has no semicolons or other excessive punctuation, it's not case sensitive and is very flexible about expressions involving mixed data types.
+
+The library now includes support for .NET 5 and nullable reference types.</Description>
+    <Copyright>Copyright © 2019-2021 SoftCircuits</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageReleaseNotes>Modified package icon.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Library now includes support for .NET 5 and nullable reference types
+- Added static method CompiledProgram.FromFile()
+- Added many overloads to Compiler.Compile(), including ones that accept streams or the source code as a string
+- Added break keyword
+- Added continue keyword
+- Fixed compiler issue that didn't handle expressions that start with two minuses and left parentheses such as -(-(2 + 1))
+- Added support for expressions with multiple array indexes, like array[i][j][k]
+- Reworked Variable comparison code to make more consistent and smarter about comparing mixed types
+- Variables registered by host application now read-only by default, but can be made writable
+- Added Variable.CompareTo() methods
+- Added intrinsic function Pow()
+- Added optional decimals parameter to Round() intrinsic function
+- Added intrinsic variables True and False
+- Removed intrinsic variables PI and E
+- Added automated unit tests
+- Added additional test programs
+- Minor tweaks and enhancements
+</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl></RepositoryUrl>
     <PackageIconUrl></PackageIconUrl>
     <PackageProjectUrl>https://github.com/SoftCircuits/Silk</PackageProjectUrl>
     <PackageTags>interpreter script scripting .net compiler runtime bytecode automation</PackageTags>
     <PackageId>SoftCircuits.Silk</PackageId>
-    <AssemblyVersion>1.0.4.0</AssemblyVersion>
-    <FileVersion>1.0.4.0</FileVersion>
-    <Version>1.0.4</Version>
+    <AssemblyVersion>1.5.0.0</AssemblyVersion>
+    <FileVersion>1.5.0.0</FileVersion>
+    <Version>1.5.0</Version>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageIcon>Logo_64x64.png</PackageIcon>
   </PropertyGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows.Forms;
 
@@ -8,15 +9,15 @@ namespace EmailBlaster
     public partial class DocumentManager : Component
     {
         // Public events
-        public event EventHandler<DocumentEventArgs> NewFile;
-        public event EventHandler<DocumentEventArgs> ReadFile;
-        public event EventHandler<DocumentEventArgs> WriteFile;
-        public event EventHandler<DocumentEventArgs> FileChanged;
+        public event EventHandler<DocumentEventArgs>? NewFile;
+        public event EventHandler<DocumentEventArgs>? ReadFile;
+        public event EventHandler<DocumentEventArgs>? WriteFile;
+        public event EventHandler<DocumentEventArgs>? FileChanged;
 
         /// <summary>
         /// The name of the current document.
         /// </summary>
-        public string FileName { get; set; }
+        public string? FileName { get; set; }
 
         /// <summary>
         /// True if the current document has unsaved changes.
@@ -26,17 +27,17 @@ namespace EmailBlaster
         /// <summary>
         /// The default extension given to documents.
         /// </summary>
-        public string DefaultExt { get; set; }
+        public string? DefaultExt { get; set; }
 
         /// <summary>
         /// The common dialog filter for document files.
         /// </summary>
-        public string Filter { get; set; }
+        public string? Filter { get; set; }
 
         /// <summary>
         /// Initial working directory.
         /// </summary>
-        public string InitialDirectory { get; set; }
+        public string? InitialDirectory { get; set; }
 
         public DocumentManager()
         {
@@ -54,7 +55,8 @@ namespace EmailBlaster
         /// <summary>
         /// Indicates if a filename has been defined for the current document.
         /// </summary>
-        public bool HasFileName => !String.IsNullOrEmpty(FileName);
+        [MemberNotNullWhen(true, nameof(FileName))]
+        public bool HasFileName => !string.IsNullOrEmpty(FileName);
 
         /// <summary>
         /// Returns the title of the current file (filename without path) or
@@ -122,7 +124,7 @@ namespace EmailBlaster
             saveFileDialog1.FileName = FileName;
             saveFileDialog1.OverwritePrompt = true;
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-                return OnSaveFile(saveFileDialog1.FileName);
+                return OnSaveFile(saveFileDialog1.FileName!);
             return false;
         }
 
@@ -198,7 +200,7 @@ namespace EmailBlaster
         {
             try
             {
-                DocumentEventArgs args = new DocumentEventArgs { FileName = path };
+                DocumentEventArgs args = new() { FileName = path };
                 WriteFile?.Invoke(this, args);
                 FileName = path;
                 IsModified = false;
@@ -215,6 +217,6 @@ namespace EmailBlaster
 
     public class DocumentEventArgs : EventArgs
     {
-        public string FileName { get; set; }
+        public string FileName { get; set; } = string.Empty;
     }
 }

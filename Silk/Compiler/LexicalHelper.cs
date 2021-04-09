@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -13,7 +14,7 @@ namespace SoftCircuits.Silk
     /// </summary>
     internal class LexicalHelper
     {
-        private LexicalAnalyzer Lexer;
+        private readonly LexicalAnalyzer Lexer;
 
         /// <summary>
         /// Represents an invalid character. This character is returned when a valid character
@@ -40,20 +41,20 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Indicates if the current position is at the end of the text being parsed.
         /// </summary>
-        public bool EndOfText => (Index >= Text.Length);
+        public bool EndOfText => Index >= Text.Length;
 
         /// <summary>
         /// Returns the number of characters not yet parsed. This is equal to the length of the
         /// text being parsed minus the current position within that text.
         /// </summary>
-        public int Remaining => (Text.Length - Index);
+        public int Remaining => Text.Length - Index;
 
 
         /// <summary>
         /// Constructs a TextParse instance.
         /// </summary>
         /// <param name="text">Text to be parsed.</param>
-        public LexicalHelper(LexicalAnalyzer lexer, string text = null)
+        public LexicalHelper(LexicalAnalyzer lexer, string? text = null)
         {
             Lexer = lexer;
             Reset(text);
@@ -72,7 +73,10 @@ namespace SoftCircuits.Silk
         /// Sets the text to be parsed and resets the current position to the start of that text.
         /// </summary>
         /// <param name="text">The text to be parsed.</param>
-        public void Reset(string text)
+#if NET5_0
+        [MemberNotNull(nameof(Text))]
+#endif
+        public void Reset(string? text)
         {
             Text = text ?? string.Empty;
             Index = 0;
@@ -195,7 +199,7 @@ namespace SoftCircuits.Silk
 
         private const char Escape = '\\';
 
-        private static readonly Dictionary<char, char> EscapeCharacterLookup = new Dictionary<char, char>
+        private static readonly Dictionary<char, char> EscapeCharacterLookup = new()
         {
             ['t'] = '\t',
             ['r'] = '\r',
@@ -216,7 +220,7 @@ namespace SoftCircuits.Silk
             // Jump to start of quoted text
             MoveAhead();
             // Parse quoted text
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new();
             while (!EndOfText)
             {
                 char c = Peek();
@@ -274,7 +278,11 @@ namespace SoftCircuits.Silk
         /// <param name="end">0-based position of the character that follows the last
         /// character to extract.</param>
         /// <returns>Returns the extracted string</returns>
+#if NETSTANDARD2_0
         public string Extract(int start, int end) => Text.Substring(start, end - start);
+#else
+        public string Extract(int start, int end) => Text[start..end];
+#endif
 
         #region Helper methods
 
@@ -294,7 +302,7 @@ namespace SoftCircuits.Silk
             return true;
         }
 
-        #endregion
+#endregion
 
         #region Operator overloads
 

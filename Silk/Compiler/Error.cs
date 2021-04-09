@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -43,6 +43,8 @@ namespace SoftCircuits.Silk
         NewLineInString,
         [Description("Variable has already been defined")]
         VariableAlreadyDefined,
+        [Description("Cannot change read-only variable")]
+        AssignToReadOnlyVariable,
         [Description("Use of undefined variable")]
         VariableNotDefined,
         [Description("Wrong number of arguments")]
@@ -70,6 +72,11 @@ namespace SoftCircuits.Silk
         ExpectedSymbol,
         [Description("Expected TO keyword")]
         ExpectedTo,
+
+        [Description("Break statement outside of loop")]
+        BreakWithoutLoop,
+        [Description("Continue statement outside of loop")]
+        ContinueWithoutLoop,
 
         [Description("Unexpected character encountered")]
         UnexpectedCharacter,
@@ -173,16 +180,16 @@ namespace SoftCircuits.Silk
         /// </summary>
         /// <typeparam name="T">The enum type.</typeparam>
         /// <param name="value">The enum value.</param>
-        private string GetEnumDescription<T>(T value) where T : struct
+        private static string GetEnumDescription<T>(T value) where T : struct
         {
-            var memberInfo = typeof(T).GetMember(value.ToString());
+            var memberInfo = typeof(T).GetMember(value.ToString() ?? string.Empty);
             if (memberInfo.Length > 0)
             {
                 var attributes = memberInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
                 if (attributes.Length > 0)
                     return ((DescriptionAttribute)attributes[0]).Description;
             }
-            return value.ToString();
+            return value.ToString() ?? $"[Unknown {typeof(T).Name}]";
         }
     }
 }

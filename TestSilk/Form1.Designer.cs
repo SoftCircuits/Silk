@@ -33,10 +33,10 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txtScript = new System.Windows.Forms.TextBox();
             this.lvwErrors = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,10 +47,10 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compileAndRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cboPlatform = new System.Windows.Forms.ToolStripComboBox();
             this.documentManager1 = new EmailBlaster.DocumentManager(this.components);
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
-            this.toolStripContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -61,25 +61,54 @@
             // toolStripContainer1
             // 
             // 
-            // toolStripContainer1.ContentPanel
+            // 
+            // 
+            this.toolStripContainer1.BottomToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.BottomToolStripPanel.Name = "";
+            this.toolStripContainer1.BottomToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.toolStripContainer1.BottomToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            // 
+            // 
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(810, 574);
+            this.toolStripContainer1.ContentPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(945, 690);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            // 
+            // 
+            // 
+            this.toolStripContainer1.LeftToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.LeftToolStripPanel.Name = "";
+            this.toolStripContainer1.LeftToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.toolStripContainer1.LeftToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(810, 598);
+            // 
+            // 
+            // 
+            this.toolStripContainer1.RightToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.RightToolStripPanel.Name = "";
+            this.toolStripContainer1.RightToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.toolStripContainer1.RightToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.toolStripContainer1.Size = new System.Drawing.Size(945, 690);
             this.toolStripContainer1.TabIndex = 0;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
-            // toolStripContainer1.TopToolStripPanel
+            // 
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
+            this.toolStripContainer1.TopToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.TopToolStripPanel.Name = "";
+            this.toolStripContainer1.TopToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.toolStripContainer1.TopToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.toolStripContainer1.TopToolStripPanel.Size = new System.Drawing.Size(945, 28);
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -90,19 +119,21 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.lvwErrors);
-            this.splitContainer1.Size = new System.Drawing.Size(810, 574);
-            this.splitContainer1.SplitterDistance = 444;
+            this.splitContainer1.Size = new System.Drawing.Size(945, 690);
+            this.splitContainer1.SplitterDistance = 533;
+            this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 1;
             // 
             // txtScript
             // 
             this.txtScript.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtScript.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtScript.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtScript.Location = new System.Drawing.Point(0, 0);
+            this.txtScript.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtScript.Multiline = true;
             this.txtScript.Name = "txtScript";
             this.txtScript.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtScript.Size = new System.Drawing.Size(810, 444);
+            this.txtScript.Size = new System.Drawing.Size(945, 533);
             this.txtScript.TabIndex = 0;
             this.txtScript.TextChanged += new System.EventHandler(this.TxtScript_TextChanged);
             // 
@@ -114,11 +145,13 @@
             this.columnHeader3,
             this.columnHeader4});
             this.lvwErrors.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvwErrors.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lvwErrors.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lvwErrors.FullRowSelect = true;
+            this.lvwErrors.HideSelection = false;
             this.lvwErrors.Location = new System.Drawing.Point(0, 0);
+            this.lvwErrors.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.lvwErrors.Name = "lvwErrors";
-            this.lvwErrors.Size = new System.Drawing.Size(810, 126);
+            this.lvwErrors.Size = new System.Drawing.Size(945, 152);
             this.lvwErrors.TabIndex = 0;
             this.lvwErrors.UseCompatibleStateImageBehavior = false;
             this.lvwErrors.View = System.Windows.Forms.View.Details;
@@ -146,10 +179,12 @@
             this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.programToolStripMenuItem});
+            this.programToolStripMenuItem,
+            this.cboPlatform});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(810, 24);
+            this.menuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this.menuStrip1.Size = new System.Drawing.Size(945, 27);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -163,7 +198,7 @@
             this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 23);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newToolStripMenuItem
@@ -214,7 +249,7 @@
             this.programToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compileAndRunToolStripMenuItem});
             this.programToolStripMenuItem.Name = "programToolStripMenuItem";
-            this.programToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
+            this.programToolStripMenuItem.Size = new System.Drawing.Size(65, 23);
             this.programToolStripMenuItem.Text = "&Program";
             // 
             // compileAndRunToolStripMenuItem
@@ -224,6 +259,14 @@
             this.compileAndRunToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.compileAndRunToolStripMenuItem.Text = "Compile and &Run";
             this.compileAndRunToolStripMenuItem.Click += new System.EventHandler(this.CompileAndRunToolStripMenuItem_Click);
+            // 
+            // cboPlatform
+            // 
+            this.cboPlatform.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboPlatform.Name = "cboPlatform";
+            this.cboPlatform.Size = new System.Drawing.Size(180, 23);
+            this.cboPlatform.Sorted = true;
+            this.cboPlatform.ToolTipText = "Runtime Platform";
             // 
             // documentManager1
             // 
@@ -239,20 +282,20 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(810, 598);
+            this.ClientSize = new System.Drawing.Size(945, 690);
             this.Controls.Add(this.toolStripContainer1);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Test Silk";
+            this.Text = "Test SILK";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
-            this.toolStripContainer1.ResumeLayout(false);
-            this.toolStripContainer1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -285,6 +328,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ToolStripComboBox cboPlatform;
     }
 }
 

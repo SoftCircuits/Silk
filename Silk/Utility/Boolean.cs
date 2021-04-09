@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -21,6 +21,12 @@ namespace SoftCircuits.Silk
         public const string TrueString = "True";
         public const string FalseString = "False";
 
+        public static bool IsTrue(int value) => value != False;
+        public static bool IsFalse(int value) => value == False;
+
+        public static bool IsTrue(double value) => value != False;
+        public static bool IsFalse(double value) => value == False;
+
         public static bool IsTrue(string value)
         {
             if (value.Equals(TrueString, StringComparison.OrdinalIgnoreCase) ||
@@ -31,11 +37,5 @@ namespace SoftCircuits.Silk
             return false;
         }
         public static bool IsFalse(string value) => !IsTrue(value);
-
-        public static bool IsTrue(int value) => (value != False);
-        public static bool IsFalse(int value) => (value == False);
-
-        public static bool IsTrue(double value) => (value != False);
-        public static bool IsFalse(double value) => (value == False);
     }
 }

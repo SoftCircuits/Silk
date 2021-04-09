@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace SoftCircuits.Silk
         public List<Operator> SecondaryChars { get; private set; }
 
         /// <summary>
-        /// Constructs a new OperatorInfo instance.
+        /// Constructs a new <see cref="Operator"/> instance.
         /// </summary>
         /// <param name="c">Operator character.</param>
         /// <param name="type">Operator token for specified character.</param>

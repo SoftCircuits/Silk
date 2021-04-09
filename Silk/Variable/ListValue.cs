@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -26,11 +26,10 @@ namespace SoftCircuits.Silk
         public ListValue(IEnumerable<Variable> values)
         {
             Value = new List<Variable>(values.Count());
-            foreach (Variable value in values)
-                Value.Add(new Variable(value));
+            Value.AddRange(values.Select(v => new Variable(v)));
         }
 
-        public override ValueType Type => ValueType.List;
+        public override VarType VarType => VarType.List;
         public override int ListCount => Value.Count;
         public override IEnumerable<Variable> GetList() => Value;
         public override string ToString() => $"{{ {string.Join(", ", Value)} }}";
@@ -39,14 +38,22 @@ namespace SoftCircuits.Silk
 
         public override int GetHashCode()
         {
+#if NETSTANDARD2_0
             unchecked
             {
                 int hash = 17;
-                hash = hash * 31 + Type.GetHashCode();
+                hash = hash * 31 + VarType.GetHashCode();
                 foreach (Variable v in Value)
                     hash = hash * 31 + Value.GetHashCode();
                 return hash;
             }
+#else
+            HashCode hash = new();
+            hash.Add(VarType);
+            foreach (Variable variable in Value)
+                hash.Add(variable.GetHashCode());
+            return hash.ToHashCode();
+#endif
         }
 
         public Variable GetAt(int index) => IsValidIndex(index) ? Value[index] : new Variable();
@@ -95,47 +102,42 @@ namespace SoftCircuits.Silk
 
         #region Comparisons
 
-        public override bool IsEqual(Variable value) => (Value.Count > 0) ? Value[0].IsEqual(value) : false;
-        public override bool IsEqual(string value) => (Value.Count > 0) ? Value[0].IsEqual(value) : false;
-        public override bool IsEqual(int value) => (Value.Count > 0) ? Value[0].IsEqual(value) : false;
-        public override bool IsEqual(double value) => (Value.Count > 0) ? Value[0].IsEqual(value) : false;
-
-        public override bool IsNotEqual(Variable value) => (Value.Count > 0) ? Value[0].IsNotEqual(value) : true;
-        public override bool IsNotEqual(string value) => (Value.Count > 0) ? Value[0].IsNotEqual(value) : true;
-        public override bool IsNotEqual(int value) => (Value.Count > 0) ? Value[0].IsNotEqual(value) : true;
-        public override bool IsNotEqual(double value) => (Value.Count > 0) ? Value[0].IsNotEqual(value) : true;
-
-        public override bool IsGreaterThan(Variable value) => (Value.Count > 0) ? Value[0].IsEqual(value) : false;
-        public override bool IsGreaterThan(string value) => (Value.Count > 0) ? Value[0].IsGreaterThan(value) : false;
-        public override bool IsGreaterThan(int value) => (Value.Count > 0) ? Value[0].IsGreaterThan(value) : false;
-        public override bool IsGreaterThan(double value) => (Value.Count > 0) ? Value[0].IsGreaterThan(value) : false;
-
-        public override bool IsGreaterThanOrEqual(Variable value) => (Value.Count > 0) ? Value[0].IsEqual(value) : false;
-        public override bool IsGreaterThanOrEqual(string value) => (Value.Count > 0) ? Value[0].IsGreaterThanOrEqual(value) : false;
-        public override bool IsGreaterThanOrEqual(int value) => (Value.Count > 0) ? Value[0].IsGreaterThanOrEqual(value) : false;
-        public override bool IsGreaterThanOrEqual(double value) => (Value.Count > 0) ? Value[0].IsGreaterThanOrEqual(value) : false;
-
-        public override bool IsLessThan(Variable value) => (Value.Count > 0) ? Value[0].IsEqual(value) : false;
-        public override bool IsLessThan(string value) => (Value.Count > 0) ? Value[0].IsLessThan(value) : false;
-        public override bool IsLessThan(int value) => (Value.Count > 0) ? Value[0].IsLessThan(value) : false;
-        public override bool IsLessThan(double value) => (Value.Count > 0) ? Value[0].IsLessThan(value) : false;
-
-        public override bool IsLessThanOrEqual(Variable value) => (Value.Count > 0) ? Value[0].IsLessThanOrEqual(value) : false;
-        public override bool IsLessThanOrEqual(string value) => (Value.Count > 0) ? Value[0].IsLessThanOrEqual(value) : false;
-        public override bool IsLessThanOrEqual(int value) => (Value.Count > 0) ? Value[0].IsLessThanOrEqual(value) : false;
-        public override bool IsLessThanOrEqual(double value) => (Value.Count > 0) ? Value[0].IsLessThanOrEqual(value) : false;
-
-        public override bool IsTrue() => (Value.Count > 0) ? Value[0].IsTrue() : false;
-        public override bool IsFalse() => (Value.Count > 0) ? Value[0].IsFalse() : false;
-
-
-        public override bool Equals(Value value)
+        public override int CompareTo(Variable value)
         {
-            var arrayValue = value as ListValue;
-            if (arrayValue == null)
-                return false;
-            return Value == arrayValue.Value;
+            switch (value.Type)
+            {
+                case VarType.String:
+                    return CompareTo(value.ToString());
+                case VarType.Integer:
+                    return CompareTo(value.ToInteger());
+                case VarType.Float:
+                    return CompareTo(value.ToFloat());
+                case VarType.List:
+                default:
+                    if (value.Value is ListValue listValue)
+                    {
+                        int i = 0;
+
+                        while (i < Value.Count && i < listValue.Value.Count)
+                        {
+                            int compare = Value[i].CompareTo(listValue.Value[i]);
+                            if (compare != 0)
+                                return compare;
+                            i++;
+                        }
+                        return Value.Count.CompareTo(listValue.Value.Count);
+                    }
+                    throw new InvalidOperationException();
+            }
         }
+        public override int CompareTo(string value) => (Value.Count > 0) ? Value[0].CompareTo(value) : new Variable().CompareTo(value);
+        public override int CompareTo(int value) => (Value.Count > 0) ? Value[0].CompareTo(value) : new Variable().CompareTo(value);
+        public override int CompareTo(double value) => (Value.Count > 0) ? Value[0].CompareTo(value) : new Variable().CompareTo(value);
+
+        public override bool IsTrue() => (Value.Count > 0) && Value[0].IsTrue();
+        public override bool IsFalse() => (Value.Count <= 0) || Value[0].IsFalse();
+
+        public override bool Equals(Value value) => value is ListValue arrayValue && Value == arrayValue.Value;
 
         #endregion
 

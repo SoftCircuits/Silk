@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -12,13 +12,11 @@ namespace SoftCircuits.Silk
     internal class LexicalAnalyzer
     {
         // Symbol characters
-        public static readonly HashSet<char> SymbolFirstChars =
-            new HashSet<char>("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        public static readonly HashSet<char> SymbolChars =
-            new HashSet<char>("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+        public static readonly HashSet<char> SymbolFirstChars = new("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        public static readonly HashSet<char> SymbolChars = new("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
 
         // Operator lookup table
-        public static readonly Dictionary<char, Operator> OperatorLookup = new Dictionary<char, Operator>
+        public static readonly Dictionary<char, Operator> OperatorLookup = new()
         {
             ['+'] = new Operator('+', TokenType.Plus),
             ['-'] = new Operator('-', TokenType.Minus),
@@ -46,7 +44,7 @@ namespace SoftCircuits.Silk
         };
 
         //
-        public static readonly Dictionary<string, TokenType> SymbolOperatorLookup = new Dictionary<string, TokenType>(StringComparer.OrdinalIgnoreCase)
+        public static readonly Dictionary<string, TokenType> SymbolOperatorLookup = new(StringComparer.OrdinalIgnoreCase)
         {
             ["and"] = TokenType.And,
             ["or"] = TokenType.Or,
@@ -58,19 +56,23 @@ namespace SoftCircuits.Silk
         private static readonly string CommentEnd = "*/";
 
         private LexicalHelper LexHelper;
-        private Token SavedUngetToken;
+        private Token? SavedUngetToken;
 
         public int LastTokenLine;
         public int CurrentLine => LexHelper.Line;
 
+        /// <summary>
+        /// Returns the text being parsed.
+        /// </summary>
+        public string Text => LexHelper.Text;
 
-        public LexicalAnalyzer(Compiler compiler, string source = null)
+        public LexicalAnalyzer(string? source = null)
         {
             LexHelper = new LexicalHelper(this);
             Reset(source);
         }
 
-        public void Reset(string source = null)
+        public void Reset(string? source = null)
         {
             LexHelper.Reset(source);
             SavedUngetToken = null;
@@ -197,7 +199,7 @@ namespace SoftCircuits.Silk
                 return new Token(TokenType.String, LexHelper.ParseQuotedText(), tokenLine);
 
             // Operator
-            if (OperatorLookup.TryGetValue(c, out Operator info))
+            if (OperatorLookup.TryGetValue(c, out Operator? info))
             {
                 LexHelper++;
                 char ch = LexHelper.Peek();
@@ -264,11 +266,11 @@ namespace SoftCircuits.Silk
 
         #region Events
 
-        public event EventHandler<ErrorEventArgs> Error;
+        public event EventHandler<ErrorEventArgs>? Error;
 
-        internal void OnError(ErrorCode code, string token = null)
+        internal void OnError(ErrorCode code, string? token = null)
         {
-            ErrorEventArgs e = new ErrorEventArgs
+            ErrorEventArgs e = new()
             {
                 ErrorCode = code,
                 Token = token

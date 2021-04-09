@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -28,7 +28,7 @@ namespace SoftCircuits.Silk
     /// </summary>
     internal static class InternalFunctions
     {
-        public static Dictionary<string, InternalFunctionInfo> InternalFunctionLookup = new Dictionary<string, InternalFunctionInfo>(StringComparer.OrdinalIgnoreCase)
+        public static Dictionary<string, InternalFunctionInfo> InternalFunctionLookup = new(StringComparer.OrdinalIgnoreCase)
         {
             ["Abs"] = new InternalFunctionInfo(Abs, 1, 1), 
             ["Acos"] = new InternalFunctionInfo(Acos, 1, 1),
@@ -52,8 +52,9 @@ namespace SoftCircuits.Silk
             ["Mid"] = new InternalFunctionInfo(Mid, 2, 3),
             ["Min"] = new InternalFunctionInfo(Min, 1, Function.NoParameterLimit),
             ["Oct"] = new InternalFunctionInfo(Oct, 1, 1),
+            ["Pow"] = new InternalFunctionInfo(Pow, 2, 2),
             ["Right"] = new InternalFunctionInfo(Right, 2, 2),
-            ["Round"] = new InternalFunctionInfo(Round, 1, 1),
+            ["Round"] = new InternalFunctionInfo(Round, 1, 2),
             ["Sin"] = new InternalFunctionInfo(Sin, 1, 1),
             ["Sqr"] = new InternalFunctionInfo(Sqr, 1, 1),
             ["String"] = new InternalFunctionInfo(String, 2, 2),
@@ -64,10 +65,10 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Internal intrinsic variables.
         /// </summary>
-        public static Dictionary<string, Variable> InternalVariableLookup = new Dictionary<string, Variable>(StringComparer.OrdinalIgnoreCase)
+        public static Dictionary<string, Variable> InternalVariableLookup = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["E"] = new Variable(Math.E),
-            ["PI"] = new Variable(Math.PI),
+            ["True"] = new Variable(Boolean.True),
+            ["False"] = new Variable(Boolean.False),
         };
 
         /// <summary>
@@ -77,20 +78,20 @@ namespace SoftCircuits.Silk
         public static void AddInternalFunctionsAndVariables(OrderedDictionary<string, Function> functions, OrderedDictionary<string, Variable> variables)
         {
             // Add internal functions (don't override host app's functions)
-            foreach (var key in InternalFunctions.InternalFunctionLookup.Keys)
+            foreach (var key in InternalFunctionLookup.Keys)
             {
                 if (!functions.ContainsKey(key))
                 {
-                    var info = InternalFunctions.InternalFunctionLookup[key];
+                    var info = InternalFunctionLookup[key];
                     functions.Add(key, new InternalFunction(key, info.Action, info.MinParameters, info.MaxParameters));
                 }
             }
             // Add internal variables (don't override host app's variables)
-            foreach (var key in InternalFunctions.InternalVariableLookup.Keys)
+            foreach (var key in InternalVariableLookup.Keys)
             {
                 if (!variables.ContainsKey(key))
                 {
-                    var v = InternalFunctions.InternalVariableLookup[key];
+                    var v = InternalVariableLookup[key];
                     variables.Add(key, new Variable(v));
                 }
             }
@@ -144,7 +145,7 @@ namespace SoftCircuits.Silk
         {
             Debug.Assert(parameters.Length >= 1);
             var variables = FlattenVariableList(parameters);
-            if (variables.Count() > 0)
+            if (variables.Any())
             {
                 if (variables.Any(p => p.IsFloat()))
                 {
@@ -206,7 +207,8 @@ namespace SoftCircuits.Silk
         private static void Environ(Variable[] parameters, Variable returnValue)
         {
             Debug.Assert(parameters.Length == 1);
-            returnValue.SetValue(Environment.GetEnvironmentVariable(parameters[0].ToString() ?? string.Empty));
+            string? variable = Environment.GetEnvironmentVariable(parameters[0].ToString() ?? string.Empty);
+            returnValue.SetValue(variable ?? string.Empty);
         }
 
         /// <summary>
@@ -301,7 +303,7 @@ namespace SoftCircuits.Silk
         {
             Debug.Assert(parameters.Length >= 1);
             var variables = FlattenVariableList(parameters);
-            if (variables.Count() > 0)
+            if (variables.Any())
             {
                 if (variables.Any(p => p.IsFloat()))
                 {
@@ -350,7 +352,7 @@ namespace SoftCircuits.Silk
         {
             Debug.Assert(parameters.Length >= 1);
             var variables = FlattenVariableList(parameters);
-            if (variables.Count() > 0)
+            if (variables.Any())
             {
                 if (variables.Any(p => p.IsFloat()))
                 {
@@ -387,6 +389,15 @@ namespace SoftCircuits.Silk
         }
 
         /// <summary>
+        /// Returns a specified number raised to the specified power.
+        /// </summary>
+        private static void Pow(Variable[] parameters, Variable returnValue)
+        {
+            Debug.Assert(parameters.Length == 2);
+            returnValue.SetValue(Math.Pow(parameters[0], parameters[1]));
+        }
+
+        /// <summary>
         /// Returns the right-most number of characters specified by the second argument
         /// from the string specified by the first argument.
         /// </summary>
@@ -394,16 +405,24 @@ namespace SoftCircuits.Silk
         {
             Debug.Assert(parameters.Length == 2);
             string s = parameters[0].ToString();
+#if NETSTANDARD2_0
             returnValue.SetValue(s.Substring(s.Length - parameters[1].ToInteger()));
+#else
+            returnValue.SetValue(s[^(parameters[1].ToInteger())..]);
+#endif
         }
 
         /// <summary>
-        /// Rounds the given value to the nearest integer.
+        /// Rounds the given value to the nearest integer, or optionally
+        /// to the number of specified decimal places.
         /// </summary>
         private static void Round(Variable[] parameters, Variable returnValue)
         {
-            Debug.Assert(parameters.Length == 1);
-            returnValue.SetValue(parameters[0].ToInteger());
+            Debug.Assert(parameters.Length == 1 || parameters.Length == 2);
+            if (parameters.Length == 1)
+                returnValue.SetValue(parameters[0].ToInteger());
+            else
+                returnValue.SetValue(Math.Round(parameters[0].ToFloat(), parameters[1].ToInteger()));
         }
 
         /// <summary>
@@ -432,10 +451,10 @@ namespace SoftCircuits.Silk
         private static void String(Variable[] parameters, Variable returnValue)
         {
             Debug.Assert(parameters.Length == 2);
-            string s = (parameters[0].Type == ValueType.String) ?
+            string s = (parameters[0].Type == VarType.String) ?
                 parameters[0].ToString() :
                 ((char)parameters[0].ToInteger()).ToString();
-            StringBuilder builder = new StringBuilder(s.Length * Math.Max(0, parameters[1].ToInteger()));
+            StringBuilder builder = new(s.Length * Math.Max(0, parameters[1].ToInteger()));
             for (int i = 0; i < parameters[1].ToInteger(); i++)
                 builder.Append(s);
             returnValue.SetValue(builder.ToString());

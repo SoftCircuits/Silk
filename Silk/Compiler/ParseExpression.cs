@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SoftCircuits.Silk
 {
@@ -25,7 +26,11 @@ namespace SoftCircuits.Silk
         /// <param name="variable">Returns the resulting variable if method returns true.</param>
         /// <param name="allowLineBreak">If true, a new lines is allowed before literal.
         /// Set to true when parsing array initialization within curly braces.</param>
+#if NETSTANDARD2_0
         internal bool ParseLiteral(out Variable variable, bool allowLineBreak = false)
+#else
+        internal bool ParseLiteral([NotNullWhen(true)] out Variable? variable, bool allowLineBreak = false)
+#endif
         {
             variable = null;
             bool negate = false;
@@ -50,7 +55,7 @@ namespace SoftCircuits.Silk
             if (token.Type == TokenType.LeftBrace)
             {
                 // List initializers
-                List<Variable> list = new List<Variable>();
+                List<Variable> list = new();
                 do
                 {
                     if (!ParseLiteral(out variable, true))
@@ -94,7 +99,7 @@ namespace SoftCircuits.Silk
         /// Will be included in token count.</param>
         /// <param name="allowLineBreak">If true, a new line is allowed before this expression.
         /// Set to true when parsing array initialization within curly braces.</param>
-        internal bool ParseExpression(bool required = true, Action expressionExtender = null, bool allowLineBreak = false)
+        internal bool ParseExpression(bool required = true, Action? expressionExtender = null, bool allowLineBreak = false)
         {
             int tokenCountIP;
 
@@ -173,7 +178,7 @@ namespace SoftCircuits.Silk
         /// <returns>False if an error occurred; true otherwise.</returns>
         private bool WritePostfixTokens()
         {
-            Stack<Token> operatorStack = new Stack<Token>();
+            Stack<Token> operatorStack = new();
             ExpressionState state = ExpressionState.None;
             int parenCount = 0;
 
@@ -212,36 +217,46 @@ namespace SoftCircuits.Silk
                         Writer.Write(ByteCode.EvalFunction, functionId);
                         // Possible recursion!
                         Writer.PushCounter();
-                        Function function = Functions[functionId];
-                        bool result = ParseFunctionArguments(function, true);
+                        bool result = ParseFunctionArguments(Functions[functionId], true);
                         Writer.PopCounter();
                         if (!result)
                             return false;
                     }
                     else if (Lexer.PeekNext().Type == TokenType.LeftBracket)
                     {
-                        // Consume left bracket
-                        Lexer.GetNext();
-                        // List item
+                        // Get list variable
                         int varId = GetVariableId(token.Value, false);
                         if (varId < 0)
                         {
                             Error(ErrorCode.VariableNotDefined, token);
                             return false;
                         }
-                        Writer.Write(ByteCode.EvalListVariable, varId);
-                        // Recursion
-                        Writer.PushCounter();
-                        bool result = ParseExpression();
-                        Writer.PopCounter();
-                        if (!result)
-                            return false;
-                        token = Lexer.GetNext();
-                        if (token.Type != TokenType.RightBracket)
+                        // Write bytecode and variable ID
+                        Writer.Write(ByteCode.EvalListVariableMulti, varId);
+                        // Placeholder for index count (don't count token)
+                        int subscriptsIP = Writer.Write(0, false);
+                        int subscripts = 0;
+
+                        do
                         {
-                            Error(ErrorCode.ExpectedRightBracket, token);
-                            return false;
-                        }
+                            // Consume left bracket
+                            Lexer.GetNext();
+                            // Recursion
+                            Writer.PushCounter();
+                            bool result = ParseExpression();
+                            Writer.PopCounter();
+                            if (!result)
+                                return false;
+                            token = Lexer.GetNext();
+                            if (token.Type != TokenType.RightBracket)
+                            {
+                                Error(ErrorCode.ExpectedRightBracket, token);
+                                return false;
+                            }
+                            subscripts++;
+                        } while (Lexer.PeekNext().Type == TokenType.LeftBracket);
+                        // Set index count
+                        Writer.WriteAt(subscriptsIP, subscripts);
                     }
                     else
                     {
@@ -275,13 +290,14 @@ namespace SoftCircuits.Silk
                     }
                     else
                     {
-                        if (token.Type == TokenType.Plus || token.Type == TokenType.Minus)
+                        if (token.Type == TokenType.Plus)
                         {
-                            if (token.Type == TokenType.Minus)
-                            {
-                                token.Type = TokenType.UnaryMinus;
-                                operatorStack.Push(token);
-                            }
+                            state = ExpressionState.UnaryOperator;
+                        }
+                        else if (token.Type == TokenType.Minus)
+                        {
+                            token.Type = TokenType.UnaryMinus;
+                            operatorStack.Push(token);
                             state = ExpressionState.UnaryOperator;
                         }
                         else if (token.Type == TokenType.Not)
@@ -306,6 +322,7 @@ namespace SoftCircuits.Silk
                     }
                     operatorStack.Push(token);
                     parenCount++;
+                    state = ExpressionState.None;
                 }
                 else if (token.Type == TokenType.RightParen && parenCount > 0)
                 {
@@ -355,7 +372,7 @@ namespace SoftCircuits.Silk
             return true;
         }
 
-        private static Dictionary<TokenType, int> OperatorPrecedence = new Dictionary<TokenType, int>
+        private readonly static Dictionary<TokenType, int> OperatorPrecedence = new()
         {
             [TokenType.LeftParen] = 0,
             [TokenType.RightParen] = 0,

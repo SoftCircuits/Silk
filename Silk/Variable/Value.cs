@@ -1,29 +1,31 @@
-﻿// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SoftCircuits.Silk
 {
-    public enum ValueType
-    {
-        String,
-        Integer,
-        Float,
-        List,
-    }
-
     /// <summary>
     /// Base class for value types.
     /// </summary>
     internal abstract class Value
     {
-        public abstract ValueType Type { get; }
+        public abstract VarType VarType { get; }
         public virtual int ListCount => 1;
         public virtual IEnumerable<Variable> GetList() => Enumerable.Empty<Variable>();
         public abstract int ToInteger();
         public abstract double ToFloat();
+
+        public static int Div(int val1, int val2) => (val2 != 0) ? val1 / val2 : 0;
+
+        public static double Div(double val1, double val2) => (val2 != 0) ? val1 / val2 : 0.0;
+
+        public static int Mod(int val1, int val2) => (val2 != 0) ? val1 % val2 : 0;
+
+        public static double Mod(double val1, double val2) => (val2 != 0) ? val1 % val2 : 0.0;
 
         /// <summary>
         /// Returns true if this variable contains a FloatValue, or a StringValue representation
@@ -75,38 +77,65 @@ namespace SoftCircuits.Silk
 
         #region Comparisons
 
-        public abstract bool IsEqual(Variable value);
-        public abstract bool IsEqual(string value);
-        public abstract bool IsEqual(int value);
-        public abstract bool IsEqual(double value);
+        public bool IsEqual(Variable value) => CompareTo(value) == 0;
+        public bool IsEqual(string value) => CompareTo(value) == 0;
+        public bool IsEqual(int value) => CompareTo(value) == 0;
+        public bool IsEqual(double value) => CompareTo(value) == 0;
 
-        public abstract bool IsNotEqual(Variable value);
-        public abstract bool IsNotEqual(string value);
-        public abstract bool IsNotEqual(int value);
-        public abstract bool IsNotEqual(double value);
+        public bool IsNotEqual(Variable value) => CompareTo(value) != 0;
+        public bool IsNotEqual(string value) => CompareTo(value) != 0;
+        public bool IsNotEqual(int value) => CompareTo(value) != 0;
+        public bool IsNotEqual(double value) => CompareTo(value) != 0;
 
-        public abstract bool IsGreaterThan(Variable value);
-        public abstract bool IsGreaterThan(string value);
-        public abstract bool IsGreaterThan(int value);
-        public abstract bool IsGreaterThan(double value);
+        public bool IsGreaterThan(Variable value) => CompareTo(value) > 0;
+        public bool IsGreaterThan(string value) => CompareTo(value) > 0;
+        public bool IsGreaterThan(int value) => CompareTo(value) > 0;
+        public bool IsGreaterThan(double value) => CompareTo(value) > 0;
 
-        public abstract bool IsGreaterThanOrEqual(Variable value);
-        public abstract bool IsGreaterThanOrEqual(string value);
-        public abstract bool IsGreaterThanOrEqual(int value);
-        public abstract bool IsGreaterThanOrEqual(double value);
+        public bool IsGreaterThanOrEqual(Variable value) => CompareTo(value) >= 0;
+        public bool IsGreaterThanOrEqual(string value) => CompareTo(value) >= 0;
+        public bool IsGreaterThanOrEqual(int value) => CompareTo(value) >= 0;
+        public bool IsGreaterThanOrEqual(double value) => CompareTo(value) >= 0;
 
-        public abstract bool IsLessThan(Variable value);
-        public abstract bool IsLessThan(string value);
-        public abstract bool IsLessThan(int value);
-        public abstract bool IsLessThan(double value);
+        public bool IsLessThan(Variable value) => CompareTo(value) < 0;
+        public bool IsLessThan(string value) => CompareTo(value) < 0;
+        public bool IsLessThan(int value) => CompareTo(value) < 0;
+        public bool IsLessThan(double value) => CompareTo(value) < 0;
 
-        public abstract bool IsLessThanOrEqual(Variable value);
-        public abstract bool IsLessThanOrEqual(string value);
-        public abstract bool IsLessThanOrEqual(int value);
-        public abstract bool IsLessThanOrEqual(double value);
+        public bool IsLessThanOrEqual(Variable value) => CompareTo(value) <= 0;
+        public bool IsLessThanOrEqual(string value) => CompareTo(value) <= 0;
+        public bool IsLessThanOrEqual(int value) => CompareTo(value) <= 0;
+        public bool IsLessThanOrEqual(double value) => CompareTo(value) <= 0;
 
         public abstract bool IsTrue();
         public abstract bool IsFalse();
+
+        public virtual int CompareTo(Variable value)
+        {
+            switch (value.Type)
+            {
+                case VarType.String:
+                    return CompareTo(value.ToString());
+                case VarType.Integer:
+                    return CompareTo(value.ToInteger());
+                case VarType.Float:
+                    return CompareTo(value.ToFloat());
+                case VarType.List:
+                default:
+                    // Method overridden by ListValue
+                    Debug.Assert(this is not ListValue);
+                    if (value.Value is ListValue list)
+                    {
+                        if (list.ListCount > 0)
+                            return CompareTo(list.Value[0]);
+                        return CompareTo(0);
+                    }
+                    throw new InvalidOperationException();
+            }
+        }
+        public abstract int CompareTo(string value);
+        public abstract int CompareTo(int value);
+        public abstract int CompareTo(double value);
 
         /// <summary>
         /// Intended for use with IEquatable. Less forgiving than IsEqual.
@@ -117,21 +146,57 @@ namespace SoftCircuits.Silk
 
         #region Helper methods
 
-        protected double ToFloat(string s) => double.TryParse(s, out double result) ? result : 0.0;
-        protected int ToInteger(string s) => int.TryParse(s, out int result) ? result : 0;
+        /// <summary>
+        /// Converts a string to a double value.
+        /// </summary>
+        /// <param name="s">The string to be converted.</param>
+        /// <returns>A double value that corresponds to <paramref name="s"/>, or 0 if it could not be converted.</returns>
+        protected static double ToFloat(string s) => double.TryParse(s, out double result) ? result : 0.0;
+
+        /// <summary>
+        /// Converts a string to an integer value.
+        /// </summary>
+        /// <param name="s">The string to be converted.</param>
+        /// <returns>An integer value that corresponds to <paramref name="s"/>, or 0 if it could not be converted.</returns>
+        protected static int ToInteger(string s)
+        {
+            if (IsNumber(s, out double value, out bool isFloat))
+                return isFloat ? (int)Math.Round(value) : (int)value;
+            return 0;
+        }
 
         /// <summary>
         /// Returns true if the given string contains a double value. Returns false
-        /// if it contains an integer value or no number at all.
+        /// if it contains an integer or non-numeric value.
         /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        protected bool IsFloat(string s)
+        /// <param name="s">The string to test.</param>
+        /// <returns>True if <paramref name="s"/> can be converted to a double value.</returns>
+        protected static bool IsFloat(string s)
         {
-            if (double.TryParse(s, out double result))
+            if (double.TryParse(s, out _))
                 return s.Contains('.');
             return false;
         }
+
+        /// <summary>
+        /// Parses <paramref name="s"/> and indicates if it's a number, and a floating
+        /// point number.
+        /// </summary>
+        protected static bool IsNumber(string s, out double value, out bool isFloat)
+        {
+            if (double.TryParse(s, out value))
+            {
+                isFloat = s.Contains('.');
+                return true;
+            }
+            isFloat = false;
+            return false;
+        }
+
+        /// <summary>
+        /// Parses <paramref name="s"/> and indicates if it's a number.
+        /// </summary>
+        protected static bool IsNumber(string s, out double value) => double.TryParse(s, out value);
 
         #endregion
 
