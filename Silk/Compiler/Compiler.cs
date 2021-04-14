@@ -68,10 +68,7 @@ namespace SoftCircuits.Silk
         private readonly ByteCodeWriter Writer;
         private CompileTimeUserFunction? CurrentFunction;
         private bool InHeader;
-
-        // TODO:
         private string? SourceFile;
-
 
 #if NET5_0
         [MemberNotNullWhen(true, nameof(CurrentFunction))]

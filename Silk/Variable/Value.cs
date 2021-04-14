@@ -3,7 +3,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace SoftCircuits.Silk
@@ -110,32 +109,21 @@ namespace SoftCircuits.Silk
         public abstract bool IsTrue();
         public abstract bool IsFalse();
 
-        public virtual int CompareTo(Variable value)
+        public int CompareTo(Variable value)
         {
-            switch (value.Type)
+            return value.Type switch
             {
-                case VarType.String:
-                    return CompareTo(value.ToString());
-                case VarType.Integer:
-                    return CompareTo(value.ToInteger());
-                case VarType.Float:
-                    return CompareTo(value.ToFloat());
-                case VarType.List:
-                default:
-                    // Method overridden by ListValue
-                    Debug.Assert(this is not ListValue);
-                    if (value.Value is ListValue list)
-                    {
-                        if (list.ListCount > 0)
-                            return CompareTo(list.Value[0]);
-                        return CompareTo(0);
-                    }
-                    throw new InvalidOperationException();
-            }
+                VarType.String => CompareTo(value.ToString()),
+                VarType.Integer => CompareTo(value.ToInteger()),
+                VarType.Float => CompareTo(value.ToFloat()),
+                VarType.List => CompareTo((ListValue)value.Value),
+                _ => throw new InvalidOperationException(),
+            };
         }
         public abstract int CompareTo(string value);
         public abstract int CompareTo(int value);
         public abstract int CompareTo(double value);
+        public virtual int CompareTo(ListValue value) => CompareTo(value.GetAt(0));
 
         /// <summary>
         /// Intended for use with IEquatable. Less forgiving than IsEqual.

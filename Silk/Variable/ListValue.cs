@@ -102,37 +102,20 @@ namespace SoftCircuits.Silk
 
         #region Comparisons
 
-        public override int CompareTo(Variable value)
+        public override int CompareTo(string value) => GetAt(0).CompareTo(value);
+        public override int CompareTo(int value) => GetAt(0).CompareTo(value);
+        public override int CompareTo(double value) => GetAt(0).CompareTo(value);
+        public override int CompareTo(ListValue value)
         {
-            switch (value.Type)
+            List<Variable> list = value.Value;
+            for (int i = 0; i < Value.Count && i < list.Count; i++)
             {
-                case VarType.String:
-                    return CompareTo(value.ToString());
-                case VarType.Integer:
-                    return CompareTo(value.ToInteger());
-                case VarType.Float:
-                    return CompareTo(value.ToFloat());
-                case VarType.List:
-                default:
-                    if (value.Value is ListValue listValue)
-                    {
-                        int i = 0;
-
-                        while (i < Value.Count && i < listValue.Value.Count)
-                        {
-                            int compare = Value[i].CompareTo(listValue.Value[i]);
-                            if (compare != 0)
-                                return compare;
-                            i++;
-                        }
-                        return Value.Count.CompareTo(listValue.Value.Count);
-                    }
-                    throw new InvalidOperationException();
+                int compare = Value[i].CompareTo(list[i]);
+                if (compare != 0)
+                    return compare;
             }
+            return Value.Count - list.Count;
         }
-        public override int CompareTo(string value) => (Value.Count > 0) ? Value[0].CompareTo(value) : new Variable().CompareTo(value);
-        public override int CompareTo(int value) => (Value.Count > 0) ? Value[0].CompareTo(value) : new Variable().CompareTo(value);
-        public override int CompareTo(double value) => (Value.Count > 0) ? Value[0].CompareTo(value) : new Variable().CompareTo(value);
 
         public override bool IsTrue() => (Value.Count > 0) && Value[0].IsTrue();
         public override bool IsFalse() => (Value.Count <= 0) || Value[0].IsFalse();

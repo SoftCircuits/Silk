@@ -46,9 +46,8 @@ namespace SilkPlatforms
         {
             Compiler compiler = new();
 
-            // TODO:
-            compiler.CreateLogFile = true;
-            compiler.LogFile = @"D:\Users\jwood\Desktop\Logfile.txt";
+            //compiler.CreateLogFile = true;
+            //compiler.LogFile = @"D:\Users\jwood\Desktop\Logfile.txt";
 
             foreach (FunctionInfo info in Platform.Functions)
                 compiler.RegisterFunction(info.Name, info.MinParameters, info.MaxParameters);

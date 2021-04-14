@@ -25,33 +25,16 @@ The library now includes support for .NET 5 and nullable reference types.</Descr
     <Copyright>Copyright © 2019-2021 SoftCircuits</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageReleaseNotes>- Library now includes support for .NET 5 and nullable reference types
-- Added static method CompiledProgram.FromFile()
-- Added many overloads to Compiler.Compile(), including ones that accept streams or the source code as a string
-- Added break keyword
-- Added continue keyword
-- Fixed compiler issue that didn't handle expressions that start with two minuses and left parentheses such as -(-(2 + 1))
-- Added support for expressions with multiple array indexes, like array[i][j][k]
-- Reworked Variable comparison code to make more consistent and smarter about comparing mixed types
-- Variables registered by host application now read-only by default, but can be made writable
-- Added Variable.CompareTo() methods
-- Added intrinsic function Pow()
-- Added optional decimals parameter to Round() intrinsic function
-- Added intrinsic variables True and False
-- Removed intrinsic variables PI and E
-- Added automated unit tests
-- Added additional test programs
-- Minor tweaks and enhancements
-</PackageReleaseNotes>
+    <PackageReleaseNotes>Minor changes and simplification to the way list variables are compared.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl></RepositoryUrl>
     <PackageIconUrl></PackageIconUrl>
     <PackageProjectUrl>https://github.com/SoftCircuits/Silk</PackageProjectUrl>
     <PackageTags>interpreter script scripting .net compiler runtime bytecode automation</PackageTags>
     <PackageId>SoftCircuits.Silk</PackageId>
-    <AssemblyVersion>1.5.0.0</AssemblyVersion>
-    <FileVersion>1.5.0.0</FileVersion>
-    <Version>1.5.0</Version>
+    <AssemblyVersion>1.5.1.0</AssemblyVersion>
+    <FileVersion>1.5.1.0</FileVersion>
+    <Version>1.5.1</Version>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageIcon>Logo_64x64.png</PackageIcon>
   </PropertyGroup>
