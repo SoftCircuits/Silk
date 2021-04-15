@@ -403,17 +403,9 @@ namespace SoftCircuits.Silk
 
         #region IEquatable
 
-        public override bool Equals(object? value)
-        {
-            return Equals(value as Variable);
-        }
+        public override bool Equals(object? value) => Equals(value as Variable);
 
-        public bool Equals(Variable? value)
-        {
-            if (value is null)
-                return false;
-            return Value.Equals(value.Value);
-        }
+        public bool Equals(Variable? value) => (value is not null) && Value.Equals(value.Value);
 
         public override int GetHashCode() => Value.GetHashCode();
 

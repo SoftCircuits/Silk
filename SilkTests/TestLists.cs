@@ -28,12 +28,17 @@ namespace SilkTests
             Assert.AreEqual(5, var.ListCount);
 
             // Compare lists
-            Variable var2 = new(list);
+            Variable var2 = new(list.Select(x => new Variable(x)));
             Assert.IsTrue(var.CompareTo(var2) == 0);
+            Assert.IsTrue(var.Equals(var2));
+
             var.GetAt(4).SetValue(100);
             Assert.IsTrue(var.CompareTo(var2) > 0);
+            Assert.IsFalse(var.Equals(var2));
+
             var.GetAt(4).SetValue(-100);
             Assert.IsTrue(var.CompareTo(var2) < 0);
+            Assert.IsFalse(var.Equals(var2));
 
             // Comparisons
             Assert.IsTrue(var.CompareTo("abc") < 0);
@@ -50,11 +55,13 @@ namespace SilkTests
             list2.RemoveAt(2);
             var.SetValue(list2);
             Assert.AreEqual(4, var.ListCount);
+            Assert.IsFalse(var.Equals(list2));  // list2 is not Variable
 
             // Set to empty list
             var.SetValue(Enumerable.Empty<Variable>());
             Assert.AreEqual(0, var.ListCount);
             Assert.IsTrue(var.CompareTo(var2) < 0);
+            Assert.IsFalse(var.Equals(var2));
         }
 
         [TestMethod]
