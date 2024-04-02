@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace SoftCircuits.Silk
 {
@@ -75,8 +74,8 @@ namespace SoftCircuits.Silk
         {
             // Bytecode size must not change (won't be able to read saved compiled data)
             Debug.Assert(sizeof(ByteCode) == sizeof(Int32));
-            ByteCodeEntries = new List<ByteCodeEntry>();
-            Counters = new List<int>();
+            ByteCodeEntries = [];
+            Counters = [];
             Lexer = lexer ?? throw new ArgumentNullException(nameof(lexer));
             Reset();
         }
@@ -147,7 +146,7 @@ namespace SoftCircuits.Silk
         /// Does not affect counter.
         /// </summary>
         /// <param name="ip">Position to write value.</param>
-        /// <param name="byteCode">Value to write.</param>
+        /// <param name="value">Value to write.</param>
         public void WriteAt(int ip, int value)
         {
             Debug.Assert(ip >= 0 && ip < IP);
@@ -287,7 +286,7 @@ namespace SoftCircuits.Silk
         /// <returns>The list of parsed lines.</returns>
         private static List<string> ParseLines(string source)
         {
-            List<string> lines = new();
+            List<string> lines = [];
 
             if (source != null)
             {
@@ -295,7 +294,7 @@ namespace SoftCircuits.Silk
                 while (pos < source.Length)
                 {
                     int nextPos;
-                    int eol = source.IndexOfAny(new[] { '\r', '\n' }, pos);
+                    int eol = source.IndexOfAny([ '\r', '\n' ], pos);
                     if (eol >= 0)
                     {
                         nextPos = eol + 1;

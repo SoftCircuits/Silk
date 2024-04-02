@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -6,23 +6,24 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-/// <summary>
-/// Various representations of functions.
-/// </summary>
-/// <remarks>
-/// Function Types:
-/// ===============
-/// User Function:
-/// A function defined in the SILK source code.
-/// 
-/// Intrinsic Function:
-/// A function added via <see cref="Compiler.RegisterFunction"></see>. It is executed
-/// at runtime by raising the <c>Function</c> event.
-/// 
-/// Internal Intrinsic Function (or Internal Function):
-/// A function defined within the SILK library and made available to the SILK program when
-/// <see cref="Compiler.EnableInternalFunctions"></see> is set to true.
-/// </remarks>
+// <summary>
+// Various representations of functions.
+// </summary>
+// <remarks>
+// Function Types:
+// ===============
+// User Function:
+// A function defined in the SILK source code.
+// 
+// Intrinsic Function:
+// A function added via <see cref="Compiler.RegisterFunction"></see>. It is executed
+// at runtime by raising the <c>Function</c> event.
+// 
+// Internal Intrinsic Function (or Internal Function):
+// A function defined within the SILK library and made available to the SILK program when
+// <see cref="Compiler.EnableInternalFunctions"></see> is set to true.
+// </remarks>
+
 namespace SoftCircuits.Silk
 {
     /// <summary>
@@ -30,7 +31,11 @@ namespace SoftCircuits.Silk
     /// constants. This class is made public so const values can be accessed
     /// externally.
     /// </summary>
-    public abstract class Function
+    /// <remarks>
+    /// Initializes base class.
+    /// </remarks>
+    /// <param name="name">Name of function.</param>
+    public abstract class Function(string name)
     {
         /// <summary>
         /// Name of Main function. This function must be defined and is where execution
@@ -47,21 +52,12 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Function name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = name;
 
         /// <summary>
         /// 
         /// </summary>
         public virtual bool IsIntrinsic => (this is IntrinsicFunction);
-
-        /// <summary>
-        /// Initializes base class.
-        /// </summary>
-        /// <param name="name">Name of function.</param>
-        public Function(string name)
-        {
-            Name = name;
-        }
     }
 
     /// <summary>
@@ -220,8 +216,12 @@ namespace SoftCircuits.Silk
 
         public RuntimeFunction(UserFunction function)
         {
+#if NETSTANDARD2_0
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
+#else
+            ArgumentNullException.ThrowIfNull(function);
+#endif
             IP = function.IP;
             Parameters = new Variable[function.NumParameters];
             for (int i = 0; i < function.NumParameters; i++)

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System.Collections;
@@ -23,14 +23,14 @@ namespace SoftCircuits.Silk
 
         public OrderedDictionary()
         {
-            IndexLookup = new Dictionary<TKey, int>();
-            Items = new List<TValue>();
+            IndexLookup = [];
+            Items = [];
         }
 
         public OrderedDictionary(IEqualityComparer<TKey> comparer)
         {
-            IndexLookup = new Dictionary<TKey, int>(comparer);
-            Items = new List<TValue>();
+            IndexLookup = new(comparer);
+            Items = [];
         }
 
         public int Add(TKey key, TValue value)

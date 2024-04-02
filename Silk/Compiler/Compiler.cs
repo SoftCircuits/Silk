@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -70,7 +70,7 @@ namespace SoftCircuits.Silk
         private bool InHeader;
         private string? SourceFile;
 
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNullWhen(true, nameof(CurrentFunction))]
 #endif
         private bool InFunction => (CurrentFunction != null);
@@ -80,21 +80,21 @@ namespace SoftCircuits.Silk
         /// </summary>
         public Compiler()
         {
-            IntrinsicFunctions = new OrderedDictionary<string, IntrinsicFunction>(StringComparer.OrdinalIgnoreCase);
-            IntrinsicVariables = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
+            IntrinsicFunctions = new(StringComparer.OrdinalIgnoreCase);
+            IntrinsicVariables = new(StringComparer.OrdinalIgnoreCase);
             MaxErrors = 45;
             CreateLogFile = false;
             LogFile = null;
             EnableLineNumbers = true;
             EnableInternalFunctions = true;
 
-            Functions = new OrderedDictionary<string, Function>(StringComparer.OrdinalIgnoreCase);
-            Variables = new OrderedDictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
-            Literals = new List<Variable>();
+            Functions = new(StringComparer.OrdinalIgnoreCase);
+            Variables = new(StringComparer.OrdinalIgnoreCase);
+            Literals = [];
             Lexer = new LexicalAnalyzer();
             Lexer.Error += Lexer_Error;
             Writer = new ByteCodeWriter(Lexer);
-            Errors = new List<Error>();
+            Errors = [];
         }
 
         /// <summary>
@@ -616,12 +616,12 @@ namespace SoftCircuits.Silk
         }
 
         /// <summary>
-        /// Parses arguments for a function call. If <paramref name="usingParentheses"/>
-        /// is true, assumes opening parenthesis has been read and reads up to and
-        /// including the closing parenthesis. Returns false on error.
+        /// Parses arguments for a function call. Returns false on error.
         /// </summary>
         /// <param name="function">Function being called. May be null for user
         /// functions. Used to verify argument count for intrinsic functions.</param>
+        /// <param name="usingParentheses">If true, assumes opening parenthesis has been
+        /// read and reads up to and including the closing parenthesis</param>
         private bool ParseFunctionArguments(Function? function, bool usingParentheses)
         {
             Token token;

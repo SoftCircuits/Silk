@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -14,7 +14,7 @@ namespace SoftCircuits.Silk
     {
         public abstract VarType VarType { get; }
         public virtual int ListCount => 1;
-        public virtual IEnumerable<Variable> GetList() => Enumerable.Empty<Variable>();
+        public virtual IEnumerable<Variable> GetList() => [];
         public abstract int ToInteger();
         public abstract double ToFloat();
 

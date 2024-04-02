@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -278,7 +278,11 @@ namespace SoftCircuits.Silk
             string s = parameters[0].ToString();
             int len = parameters[1].ToInteger();
             if (s.Length > len)
+#if NETSTANDARD2_0
                 returnValue.SetValue(s.Substring(0, len));
+#else
+                returnValue.SetValue(s[..len]);
+#endif
             returnValue.SetValue(s);
         }
 

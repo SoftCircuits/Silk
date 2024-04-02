@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -55,7 +55,7 @@ namespace SoftCircuits.Silk
             if (token.Type == TokenType.LeftBrace)
             {
                 // List initializers
-                List<Variable> list = new();
+                List<Variable> list = [];
                 do
                 {
                     if (!ParseLiteral(out variable, true))
@@ -70,7 +70,7 @@ namespace SoftCircuits.Silk
                     NextLine();
                     return false;
                 }
-                variable = new Variable(list);
+                variable = new(list);
                 return true;
             }
             if (token.Type == TokenType.Minus || token.Type == TokenType.Plus)
@@ -80,7 +80,7 @@ namespace SoftCircuits.Silk
             }
             if (token.IsLiteral)
             {
-                variable = new Variable(token);
+                variable = new(token);
                 if (negate)
                     variable = variable.Negate();
                 return true;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace SoftCircuits.Silk
         {
             Char = c;
             Type = type;
-            SecondaryChars = new List<Operator>(secondaries);
+            SecondaryChars = new(secondaries);
         }
     }
 }

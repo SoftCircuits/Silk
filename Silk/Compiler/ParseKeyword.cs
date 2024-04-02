@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -125,7 +125,7 @@ namespace SoftCircuits.Silk
         private void ParseIf(Token token)
         {
             bool foundElseWithoutIf = false;
-            List<int> breakAddressIPs = new();
+            List<int> breakAddressIPs = [];
 
             // Write bytecode and false address placeholder
             Writer.Write(ByteCode.JumpIfFalse);
@@ -185,7 +185,7 @@ namespace SoftCircuits.Silk
                 Writer.WriteAt(ip, Writer.IP);
         }
 
-        private void ParseWhile(Token token)
+        private void ParseWhile(Token _)
         {
             // Create loop context
             using LoopContext loopContext = new(CurrentFunction, Writer);
@@ -303,7 +303,7 @@ namespace SoftCircuits.Silk
             Writer.Write(ByteCode.Jump, loopContext.StartIP);
         }
 
-        private void ParseBreak(Token token)
+        private void ParseBreak(Token _)
         {
             LoopContext? loopContext = CurrentFunction?.GetLoopContext();
             if (loopContext == null)
@@ -316,7 +316,7 @@ namespace SoftCircuits.Silk
             VerifyEndOfLine();
         }
 
-        private void ParseContinue(Token token)
+        private void ParseContinue(Token _)
         {
             LoopContext? loopContext = CurrentFunction?.GetLoopContext();
             if (loopContext == null)
@@ -329,7 +329,7 @@ namespace SoftCircuits.Silk
             VerifyEndOfLine();
         }
 
-        private void ParseReturn(Token token)
+        private void ParseReturn(Token _)
         {
             // Return can optionally be followed by expression
             Writer.Write(ByteCode.Return);

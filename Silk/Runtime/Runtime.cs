@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -8,6 +8,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SoftCircuits.Silk
 {
+    /// <summary>
+    /// This class executes a <see cref="CompiledProgram"/>.
+    /// </summary>
     public class Runtime
     {
         private CompiledProgram Program;
@@ -32,7 +35,7 @@ namespace SoftCircuits.Silk
         /// Resets this runtime instance to be ready to execute the given <see cref="CompiledProgram"/>.
         /// </summary>
         /// <param name="program">The program to prepare to execute.</param>
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(Program), nameof(Reader), nameof(FunctionStack), nameof(VarStack))]
 #endif
         public void Reset(CompiledProgram program)
@@ -100,8 +103,12 @@ namespace SoftCircuits.Silk
         private void ExecuteFunction(RuntimeFunction function)
         {
             Debug.Assert(function != null);
+#if NETSTANDARD2_0
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
+#else
+            ArgumentNullException.ThrowIfNull(function);
+#endif
 
             FunctionStack.Push(function);
             Reader.Push();
@@ -138,11 +145,13 @@ namespace SoftCircuits.Silk
             [ByteCode.AssignListVariableMulti] = r => r.AssignListVariableMulti(),
         };
 
+#pragma warning disable CA1822 // Mark members as static
         private void Nop()
         {
             // Should never be used
             Debug.Assert(false);
         }
+#pragma warning restore CA1822 // Mark members as static
 
         private void ExecFunction()
         {
@@ -517,8 +526,17 @@ namespace SoftCircuits.Silk
 
         #region Events
 
+        /// <summary>
+        /// Event that fires when a program starts.
+        /// </summary>
         public event EventHandler<BeginEventArgs>? Begin;
+        /// <summary>
+        /// Event that fires when a program ends.
+        /// </summary>
         public event EventHandler<EndEventArgs>? End;
+        /// <summary>
+        /// Event that fires to evaluate a function.
+        /// </summary>
         public event EventHandler<FunctionEventArgs>? Function;
 
         internal void OnBegin()

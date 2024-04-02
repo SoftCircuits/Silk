@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,7 +11,7 @@ namespace SilkTests
     {
         private readonly ProgramTest[] Tests = new ProgramTest[]
         {
-            new ProgramTest
+            new()
             {
                 Result = new Variable(5),
                 Source = @"main()
@@ -24,7 +24,7 @@ namespace SilkTests
     return a
 }"
             },
-            new ProgramTest
+            new()
             {
                 Result = new Variable(5),
                 Source = @"main()
@@ -55,7 +55,7 @@ Halve(a)
     return a / 2
 }"
             },
-            new ProgramTest
+            new()
             {
                 Result = new Variable(21924),
                 Source = @"main()
@@ -73,7 +73,7 @@ triple(a)
     return a * 3
 }"
             },
-            new ProgramTest
+            new()
             {
                 Result = new Variable(141),
                 Source = @"var array = { 20, 30, ""abc"", 40, ""def"", 50, [5], { 1, 2, 3 } }
@@ -85,7 +85,7 @@ main()
     return a
 }"
             },
-            new ProgramTest
+            new()
             {
                 Result = new Variable("12345"),
                 Source = @"var array = { 2, ""3"", ""4"", 5 }

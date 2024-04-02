@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -6,16 +6,29 @@ using System.ComponentModel;
 
 namespace SoftCircuits.Silk
 {
+    /// <summary>
+    /// Indicates the severity of the error.
+    /// </summary>
     public enum ErrorLevel
     {
+        /// <summary>
+        /// Indicates an error condition.
+        /// </summary>
         [Description("ERROR")]
         Error,
+        /// <summary>
+        /// Indicates an error that prevented the process from continuing.
+        /// </summary>
         [Description("FATAL ERROR")]
         FatalError,
     }
 
+    /// <summary>
+    /// Identifies an error that occurred.
+    /// </summary>
     public enum ErrorCode
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         [Description("Operation completed successfully")]
         NoError,
         [Description("Too many errors encountered")]
@@ -84,13 +97,29 @@ namespace SoftCircuits.Silk
         UnexpectedKeyword,
         [Description("Unexpected token encountered")]
         UnexpectedToken,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 
+    /// <summary>
+    /// Describes an error.
+    /// </summary>
     public class Error
     {
+        /// <summary>
+        /// Gets the error severity.
+        /// </summary>
         public ErrorLevel Level { get; private set; }
+        /// <summary>
+        /// Gets a code that identifies the error.
+        /// </summary>
         public ErrorCode Code { get; private set; }
+        /// <summary>
+        /// Gets a description of the error.
+        /// </summary>
         public string Description { get; private set; }
+        /// <summary>
+        /// Gets the line number where the error occurred.
+        /// </summary>
         public int Line { get; private set; }
 
         /// <summary>
@@ -116,8 +145,12 @@ namespace SoftCircuits.Silk
         /// <param name="line">Error line number.</param>
         internal Error(ErrorLevel level, ErrorCode code, string description, int line)
         {
+#if NETSTANDARD2_0
             if (description == null)
                 throw new ArgumentNullException(nameof(description));
+#else
+            ArgumentNullException.ThrowIfNull(description);
+#endif
             Level = level;
             Code = code;
             Description = GetEnumDescription(code);
@@ -133,8 +166,12 @@ namespace SoftCircuits.Silk
         /// <param name="token">The token associated with this error.</param>
         internal Error(ErrorLevel level, ErrorCode code, Token token)
         {
+#if NETSTANDARD2_0
             if (token == null)
                 throw new ArgumentNullException(nameof(token));
+#else
+            ArgumentNullException.ThrowIfNull(token);
+#endif
             Level = level;
             Code = code;
             Description = GetEnumDescription(code);
@@ -151,10 +188,15 @@ namespace SoftCircuits.Silk
         /// <param name="token">The token associated with this error.</param>
         internal Error(ErrorLevel level, ErrorCode code, string description, Token token)
         {
+#if NETSTANDARD2_0
             if (description == null)
                 throw new ArgumentNullException(nameof(description));
             if (token == null)
                 throw new ArgumentNullException(nameof(token));
+#else
+            ArgumentNullException.ThrowIfNull(description);
+            ArgumentNullException.ThrowIfNull(token);
+#endif
             Level = level;
             Code = code;
             Description = GetEnumDescription(code);

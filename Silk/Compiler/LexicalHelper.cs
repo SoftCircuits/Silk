@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -53,6 +53,8 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Constructs a TextParse instance.
         /// </summary>
+        /// <param name="lexer">The <see cref="LexicalAnalyzer"/> this instance
+        /// should be associated with.</param>
         /// <param name="text">Text to be parsed.</param>
         public LexicalHelper(LexicalAnalyzer lexer, string? text = null)
         {
@@ -73,7 +75,7 @@ namespace SoftCircuits.Silk
         /// Sets the text to be parsed and resets the current position to the start of that text.
         /// </summary>
         /// <param name="text">The text to be parsed.</param>
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(Text))]
 #endif
         public void Reset(string? text)

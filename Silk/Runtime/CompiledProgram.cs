@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -10,6 +10,9 @@ using System.Linq;
 
 namespace SoftCircuits.Silk
 {
+    /// <summary>
+    /// Represents the compiled version of a program.
+    /// </summary>
     public class CompiledProgram
     {
         private const int FileSignature = 0x4B4C4953;   // "SILK"
@@ -57,7 +60,10 @@ namespace SoftCircuits.Silk
             Reset();
         }
 
-#if NET5_0
+        /// <summary>
+        /// Clears all data.
+        /// </summary>
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(ByteCodes))]
         [MemberNotNull(nameof(Functions))]
         [MemberNotNull(nameof(Variables))]
@@ -65,13 +71,16 @@ namespace SoftCircuits.Silk
 #endif
         public void Reset()
         {
-            ByteCodes = Array.Empty<int>();
-            Functions = Array.Empty<Function>();
-            Variables = Array.Empty<Variable>();
-            Literals = Array.Empty<Variable>();
+            ByteCodes = [];
+            Functions = [];
+            Variables = [];
+            Literals = [];
             LineNumbers = null;
         }
 
+        /// <summary>
+        /// Gets whether this instance contains any data.
+        /// </summary>
         public bool IsEmpty => ByteCodes.Length == 0;
 
         internal int[] GetByteCodes() => ByteCodes;
@@ -245,7 +254,9 @@ namespace SoftCircuits.Silk
                     }
                     else throw new Exception($"Internal intrinsic function \"{function.Name}\" not found");
                 }
+#pragma warning disable IDE0305 // Simplify collection initialization
                 Functions = functions.ToArray();
+#pragma warning restore IDE0305 // Simplify collection initialization
             }
             catch (Exception)
             {
@@ -255,7 +266,7 @@ namespace SoftCircuits.Silk
             }
         }
 
-        private void WriteVariable(Variable value, BinaryWriter writer)
+        private static void WriteVariable(Variable value, BinaryWriter writer)
         {
             writer.Write((int)value.Type);
             switch (value.Type)
@@ -279,7 +290,7 @@ namespace SoftCircuits.Silk
             }
         }
 
-        private Variable ReadVariable(BinaryReader reader)
+        private static Variable ReadVariable(BinaryReader reader)
         {
             VarType type = (VarType)reader.ReadInt32();
             switch (type)
@@ -292,7 +303,7 @@ namespace SoftCircuits.Silk
                     return new Variable(reader.ReadDouble());
                 case VarType.List:
                     int count = reader.ReadInt32();
-                    List<Variable> variables = new();
+                    List<Variable> variables = [];
                     for (int i = 0; i < count; i++)
                         variables.Add(ReadVariable(reader));
                     return new Variable(variables);

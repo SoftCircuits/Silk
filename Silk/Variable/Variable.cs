@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -83,7 +83,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable to a string value.
         /// </summary>
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(Value))]
 #endif
         public void SetValue(string value)
@@ -97,7 +97,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable to an integer value.
         /// </summary>
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(Value))]
 #endif
         public void SetValue(int value)
@@ -112,7 +112,7 @@ namespace SoftCircuits.Silk
         /// Sets this variable to a floating-point value.
         /// </summary>
         /// <param name="value"></param>
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(Value))]
 #endif
         public void SetValue(double value)
@@ -126,7 +126,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable to a list with the given items.
         /// </summary>
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(Value))]
 #endif
         public void SetValue(IEnumerable<Variable> values)
@@ -142,7 +142,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable's value to the value of another variable.
         /// </summary>
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(Value))]
 #endif
         public void SetValue(Variable var)
@@ -169,7 +169,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable's value from a token.
         /// </summary>
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(Value))]
 #endif
         internal void SetValue(Token token)
@@ -186,7 +186,7 @@ namespace SoftCircuits.Silk
         /// <summary>
         /// Sets this variable to the given value.
         /// </summary>
-#if NET5_0
+#if !NETSTANDARD2_0
         [MemberNotNull(nameof(Value))]
 #endif
         internal void SetValue(Value value)
@@ -225,7 +225,7 @@ namespace SoftCircuits.Silk
         /// Returns the items from this variable's list. Returns a single item if
         /// this variable does not contain a list.
         /// </summary>
-        public IEnumerable<Variable> GetList() => IsList ? Value.GetList() : new[] { this };
+        public IEnumerable<Variable> GetList() => IsList ? Value.GetList() : [this];
 
         /// <summary>
         /// Converts this variable to a string.
@@ -249,6 +249,7 @@ namespace SoftCircuits.Silk
         /// </summary>
         public bool IsFloat() => Value.IsFloat();
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public Variable Add(Variable value) => Value.Add(value);
         public Variable Add(string value) => Value.Add(value);
         public Variable Add(int value) => Value.Add(value);
@@ -285,19 +286,23 @@ namespace SoftCircuits.Silk
         public Variable Concat(double value) => Value.Concat(value);
 
         public Variable Negate() => Value.Negate();
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         #endregion
 
         #region Conversion operators
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public static implicit operator int(Variable v) => v.ToInteger();
         public static implicit operator double(Variable v) => v.ToFloat();
         public static implicit operator string(Variable v) => v.ToString();
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         #endregion
 
         #region Comparisons
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public int CompareTo(Variable var) => Value.CompareTo(var);
         public int CompareTo(string var) => Value.CompareTo(var);
         public int CompareTo(int var) => Value.CompareTo(var);
@@ -335,11 +340,13 @@ namespace SoftCircuits.Silk
 
         public bool IsTrue() => Value.IsTrue();
         public bool IsFalse() => Value.IsFalse();
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         #endregion
 
         #region Operator overloads
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public static bool operator ==(Variable var1, Variable var2) => var1.IsEqual(var2);
         public static bool operator ==(Variable var1, string var2) => var1.IsEqual(var2);
         public static bool operator ==(Variable var1, int var2) => var1.IsEqual(var2);
@@ -398,15 +405,19 @@ namespace SoftCircuits.Silk
         public static Variable operator -(Variable var1) => var1.Negate();
 
         public Variable this[int index] => GetAt(index);
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         #endregion
 
         #region IEquatable
 
+        /// <inheritdoc/>
         public override bool Equals(object? value) => Equals(value as Variable);
 
+        /// <inheritdoc/>
         public bool Equals(Variable? value) => (value is not null) && Value.Equals(value.Value);
 
+        /// <inheritdoc/>
         public override int GetHashCode() => Value.GetHashCode();
 
         #endregion

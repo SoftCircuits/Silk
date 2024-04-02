@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Jonathan Wood (www.softcircuits.com)
+﻿// Copyright (c) 2019-2024 Jonathan Wood (www.softcircuits.com)
 // Licensed under the MIT license.
 //
 using System;
@@ -13,7 +13,7 @@ namespace SoftCircuits.Silk
 
         public ListValue()
         {
-            Value = new List<Variable>();
+            Value = [];
         }
 
         public ListValue(int size)
