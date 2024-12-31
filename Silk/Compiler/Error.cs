@@ -26,9 +26,9 @@ namespace SoftCircuits.Silk
     /// <summary>
     /// Identifies an error that occurred.
     /// </summary>
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public enum ErrorCode
     {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         [Description("Operation completed successfully")]
         NoError,
         [Description("Too many errors encountered")]
@@ -97,8 +97,8 @@ namespace SoftCircuits.Silk
         UnexpectedKeyword,
         [Description("Unexpected token encountered")]
         UnexpectedToken,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     /// <summary>
     /// Describes an error.

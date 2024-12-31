@@ -1,7 +1,7 @@
 ﻿
 namespace SilkPlatforms
 {
-    partial class frmRun
+    partial class RunForm
     {
         /// <summary>
         /// Required designer variable.
@@ -40,8 +40,8 @@ namespace SilkPlatforms
             this.Name = "frmRun";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmRun";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmRun_FormClosing);
-            this.Load += new System.EventHandler(this.frmRun_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RunForm_FormClosing);
+            this.Load += new System.EventHandler(this.RunForm_Load);
             this.ResumeLayout(false);
 
         }

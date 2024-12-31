@@ -9,18 +9,11 @@ using System.Text;
 
 namespace SoftCircuits.Silk
 {
-    internal class InternalFunctionInfo
+    internal class InternalFunctionInfo(Action<Variable[], Variable> action, int minParameters = Function.NoParameterLimit, int maxParameters = Function.NoParameterLimit)
     {
-        public Action<Variable[], Variable> Action { get; private set; }
-        public int MinParameters { get; set; }
-        public int MaxParameters { get; set; }
-
-        public InternalFunctionInfo(Action<Variable[], Variable> action, int minParameters = Function.NoParameterLimit, int maxParameters = Function.NoParameterLimit)
-        {
-            Action = action;
-            MinParameters = minParameters;
-            MaxParameters = maxParameters;
-        }
+        public Action<Variable[], Variable> Action { get; private set; } = action;
+        public int MinParameters { get; set; } = minParameters;
+        public int MaxParameters { get; set; } = maxParameters;
     }
 
     /// <summary>

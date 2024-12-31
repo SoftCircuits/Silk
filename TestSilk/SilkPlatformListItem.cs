@@ -5,15 +5,11 @@ using SilkPlatforms;
 
 namespace TestSilk
 {
-    class SilkPlatformListItem
+    internal class SilkPlatformListItem(string text, SilkPlatform platform)
     {
-        public string Text { get; set; }
-        public SilkPlatform Platform { get; set; }
-        public SilkPlatformListItem(string text, SilkPlatform platform)
-        {
-            Text = text;
-            Platform = platform;
-        }
+        public string Text { get; set; } = text;
+        public SilkPlatform Platform { get; set; } = platform;
+
         public override string ToString() => Text;
     }
 }

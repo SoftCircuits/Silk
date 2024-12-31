@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Platform>windows</Platform>
     <UseWindowsForms>true</UseWindowsForms>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="frmRun.cs">
+    <Compile Update="RunForm.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

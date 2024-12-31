@@ -4,7 +4,6 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
 namespace SilkPlatforms
@@ -16,7 +15,7 @@ namespace SilkPlatforms
     /// Console object, we need to only create one console window during the application
     /// lifetime.
     /// </summary>
-    public static class ConsoleWindow
+    public static partial class ConsoleWindow
     {
 
         #region Windows interop
@@ -24,42 +23,42 @@ namespace SilkPlatforms
         /// <summary>
         /// Allocates a new console for the calling process.
         /// </summary>
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [LibraryImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool AllocConsole();
+        private static partial bool AllocConsole();
 
         /// <summary>
         /// Detaches the calling process from its console.
         /// </summary>
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool FreeConsole();
+        //[LibraryImport("kernel32.dll", SetLastError = true)]
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        //private static partial bool FreeConsole();
 
         /// <summary>
         /// Retrieves the window handle used by the console associated with the
         /// calling process.
         /// </summary>
-        [DllImport("Kernel32.dll")]
-        private static extern IntPtr GetConsoleWindow();
+        [LibraryImport("Kernel32.dll")]
+        private static partial IntPtr GetConsoleWindow();
 
         /// <summary>
         /// Gets the console window title text.
         /// </summary>
-        [DllImport("Kernel32.Dll", CharSet = CharSet.Unicode)]
-        private static extern int GetConsoleTitle(StringBuilder titleBuilder, int titleSize);
+        [LibraryImport("Kernel32.Dll", EntryPoint = "GetConsoleTitleW", StringMarshalling = StringMarshalling.Utf16)]
+        private static partial int GetConsoleTitle([Out] char[] ptszTitle, int titleSize);
 
         /// <summary>
         /// Sets the console window title text.
         /// </summary>
-        [DllImport("Kernel32.Dll", CharSet = CharSet.Unicode)]
+        [LibraryImport("Kernel32.Dll", EntryPoint = "SetConsoleTitleW", StringMarshalling = StringMarshalling.Utf16)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetConsoleTitle(string title);
+        private static partial bool SetConsoleTitle(string title);
 
         /// <summary>
         /// Shows or hides the console window.
         /// </summary>
-        [DllImport("User32.dll")]
-        private static extern int ShowWindow(IntPtr hwnd, int nShow);
+        [LibraryImport("User32.dll")]
+        private static partial int ShowWindow(IntPtr hwnd, int nShow);
 
         private const int SW_HIDE = 0;
         private const int SW_SHOW = 5;
@@ -67,13 +66,13 @@ namespace SilkPlatforms
         /// <summary>
         /// Gets if the console window is visible.
         /// </summary>
-        [DllImport("Kernel32.dll")]
+        [LibraryImport("Kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool IsWindowVisible(IntPtr hWnd);
+        private static partial bool IsWindowVisible(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
+        [LibraryImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+        private static partial bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
@@ -82,12 +81,12 @@ namespace SilkPlatforms
             public int Top;         // y position of upper-left corner
             public int Right;       // x position of lower-right corner
             public int Bottom;      // y position of lower-right corner
-            public int Width => Right - Left;
-            public int Height => Bottom - Top;
+            public readonly int Width => Right - Left;
+            public readonly int Height => Bottom - Top;
         }
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
+        [LibraryImport("user32.dll")]
+        private static partial IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
 
         private const int SWP_NOSIZE = 0x0001;
         private const int SWP_NOZORDER = 0x0004;
@@ -95,8 +94,8 @@ namespace SilkPlatforms
         /// <summary>
         /// Gets a handle to a window's system menu.
         /// </summary>
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+        [LibraryImport("user32.dll", SetLastError = true)]
+        private static partial IntPtr GetSystemMenu(IntPtr hWnd, [MarshalAs(UnmanagedType.Bool)] bool bRevert);
 
         private const int MF_BYCOMMAND = 0x00000000;
         private const int SC_CLOSE = 0xF060;
@@ -104,14 +103,14 @@ namespace SilkPlatforms
         /// <summary>
         /// Deletes a menu item.
         /// </summary>
-        [DllImport("user32.dll")]
-        private static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
+        [LibraryImport("user32.dll")]
+        private static partial int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
 
         //private delegate bool SetConsoleCtrlEventHandler(uint ctrlType);
 
-        //[DllImport("Kernel32")]
+        //[LibraryImport("Kernel32")]
         //[return: MarshalAs(UnmanagedType.Bool)]
-        //private static extern bool SetConsoleCtrlHandler(SetConsoleCtrlEventHandler handler, bool add);
+        //private static partial bool SetConsoleCtrlHandler(SetConsoleCtrlEventHandler handler, bool add);
 
         //private const int CTRL_C_EVENT = 0;
         //private const int CTRL_BREAK_EVENT = 1;
@@ -130,7 +129,7 @@ namespace SilkPlatforms
             //    throw new Exception("Unable to set console control handler.");
         }
 
-        // static classes cannot have finalizers
+        //// static classes cannot have finalizers
         //~ConsoleWindow()
         //{
         //    if (Handle != (IntPtr)0)
@@ -147,11 +146,17 @@ namespace SilkPlatforms
         {
             get
             {
-                StringBuilder builder = new(256);
-                int result = GetConsoleTitle(builder, builder.Capacity);
-                if (result == 0)
-                    throw new Exception("Unable to retrieve console window title.");
-                return builder.ToString();
+                char[] buffer = new char[255];
+                int length = GetConsoleTitle(buffer, buffer.Length);
+                return new(buffer, 0, length);
+
+
+
+                //StringBuilder builder = new(256);
+                //int result = GetConsoleTitle(builder, builder.Capacity);
+                //if (result == 0)
+                //    throw new Exception("Unable to retrieve console window title.");
+                //return builder.ToString();
             }
             set => SetConsoleTitle(value);
 
@@ -163,9 +168,7 @@ namespace SilkPlatforms
         public static bool Visible
         {
             get => IsWindowVisible(GetConsoleWindow());
-#pragma warning disable CA1806 // Do not ignore method results
-            set => ShowWindow(GetConsoleWindow(), value ? SW_SHOW : SW_HIDE);
-#pragma warning restore CA1806 // Do not ignore method results
+            set => _ = ShowWindow(GetConsoleWindow(), value ? SW_SHOW : SW_HIDE);
         }
 
         /// <summary>
@@ -174,7 +177,7 @@ namespace SilkPlatforms
         public static void CenterWindow()
         {
             IntPtr hWnd = GetConsoleWindow();
-            if (hWnd != IntPtr.Zero)
+            if (hWnd != IntPtr.Zero && Screen.PrimaryScreen != null)
             {
                 Rectangle screen = Screen.PrimaryScreen.WorkingArea;
                 if (GetWindowRect(hWnd, out RECT window))
@@ -196,9 +199,7 @@ namespace SilkPlatforms
             {
                 IntPtr hMenu = GetSystemMenu(hWnd, false);
                 if (hMenu != IntPtr.Zero)
-#pragma warning disable CA1806 // Do not ignore method results
-                    DeleteMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
-#pragma warning restore CA1806 // Do not ignore method results
+                    _ = DeleteMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
             }
         }
 

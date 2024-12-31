@@ -254,9 +254,7 @@ namespace SoftCircuits.Silk
                     }
                     else throw new Exception($"Internal intrinsic function \"{function.Name}\" not found");
                 }
-#pragma warning disable IDE0305 // Simplify collection initialization
-                Functions = functions.ToArray();
-#pragma warning restore IDE0305 // Simplify collection initialization
+                Functions = [.. functions];
             }
             catch (Exception)
             {

@@ -76,34 +76,36 @@ namespace SilkTests
             Assert.AreEqual("22", EvaluateExpression("\"2\" & \"2\""));
             Assert.AreEqual("2.52.6", EvaluateExpression("2.5 & 2.6"));
 
-            Assert.IsTrue(EvaluateExpression("'abc' + 5") == 5);
-            Assert.IsTrue(EvaluateExpression("'abc' - 5") == -5);
-            Assert.IsTrue(EvaluateExpression("'abc' * 5") == 0);
-            Assert.IsTrue(EvaluateExpression("'abc' / 5") == 0);
-            Assert.IsTrue(EvaluateExpression("'abc' % 5") == 0);
-            Assert.IsTrue(EvaluateExpression("-'abc'") == 0);
-            Assert.IsTrue(EvaluateExpression("'abc' ^ 5") == 0);
-            Assert.IsTrue(EvaluateExpression("'abc' & 5") == "abc5");
+            Assert.AreEqual(5, EvaluateExpression("'abc' + 5"));
+            Assert.AreEqual(-5, EvaluateExpression("'abc' - 5"));
+            Assert.AreEqual(0, EvaluateExpression("'abc' * 5"));
+            Assert.AreEqual(0, EvaluateExpression("'abc' / 5"));
+            Assert.AreEqual(0, EvaluateExpression("'abc' % 5"));
+            Assert.AreEqual(0, EvaluateExpression("-'abc'"));
+            Assert.AreEqual(0, EvaluateExpression("'abc' ^ 5"));
+            Assert.AreEqual("abc5", EvaluateExpression("'abc' & 5"));
 
-            Assert.IsTrue(EvaluateExpression("5 + 'abc'") == 5);
-            Assert.IsTrue(EvaluateExpression("5 - 'abc'") == 5);
-            Assert.IsTrue(EvaluateExpression("5 * 'abc'") == 0);
-            Assert.IsTrue(EvaluateExpression("5 / 'abc'") == 0);
-            Assert.IsTrue(EvaluateExpression("5 % 'abc'") == 0);
-            Assert.IsTrue(EvaluateExpression("5 & 'abc'") == "5abc");
+            Assert.AreEqual(5, EvaluateExpression("5 + 'abc'"));
+            Assert.AreEqual(5, EvaluateExpression("5 - 'abc'"));
+            Assert.AreEqual(0, EvaluateExpression("5 * 'abc'"));
+            Assert.AreEqual(0, EvaluateExpression("5 / 'abc'"));
+            Assert.AreEqual(0, EvaluateExpression("5 % 'abc'"));
+            Assert.AreEqual("5abc", EvaluateExpression("5 & 'abc'"));
         }
 
         private static Variable EvaluateExpression(string expression)
         {
-            string source = $@"main()
-{{
-    return {expression}
-}}";
+            // Create program from expression
+            string source = $$"""
+                main()
+                {
+                    return {{expression}}
+                }
+                """;
 
             Compiler compiler = new();
             Assert.IsTrue(compiler.CompileSource(source, out CompiledProgram? program));
-
-            Runtime runtime = new(program!);
+            Runtime runtime = new(program);
             return runtime.Execute();
         }
     }

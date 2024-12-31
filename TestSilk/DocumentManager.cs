@@ -17,26 +17,31 @@ namespace EmailBlaster
         /// <summary>
         /// The name of the current document.
         /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? FileName { get; set; }
 
         /// <summary>
         /// True if the current document has unsaved changes.
         /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsModified { get; set; }
 
         /// <summary>
         /// The default extension given to documents.
         /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? DefaultExt { get; set; }
 
         /// <summary>
         /// The common dialog filter for document files.
         /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? Filter { get; set; }
 
         /// <summary>
         /// Initial working directory.
         /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? InitialDirectory { get; set; }
 
         public DocumentManager()
@@ -154,7 +159,7 @@ namespace EmailBlaster
         {
             try
             {
-                DocumentEventArgs args = new DocumentEventArgs { FileName = string.Empty };
+                DocumentEventArgs args = new() { FileName = string.Empty };
                 NewFile?.Invoke(this, args);
                 FileName = null;
                 IsModified = false;
@@ -177,7 +182,7 @@ namespace EmailBlaster
         {
             try
             {
-                DocumentEventArgs args = new DocumentEventArgs { FileName = path };
+                DocumentEventArgs args = new() { FileName = path };
                 ReadFile?.Invoke(this, args);
                 FileName = path;
                 IsModified = false;

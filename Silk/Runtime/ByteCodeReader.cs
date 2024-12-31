@@ -10,22 +10,15 @@ namespace SoftCircuits.Silk
     /// <summary>
     /// Helper class for reading bytecode data.
     /// </summary>
-    internal class ByteCodeReader
+    internal class ByteCodeReader(int[] bytecodes)
     {
-        private readonly int[] ByteCodes;
-        private readonly Stack<int> IPStack;
+        private readonly int[] ByteCodes = bytecodes ?? throw new ArgumentNullException(nameof(bytecodes));
+        private readonly Stack<int> IPStack = new();
 
         /// <summary>
         /// Instruction pointer (IP). Returns the current read position.
         /// </summary>
-        public int IP { get; private set; }
-
-        public ByteCodeReader(int[] bytecodes)
-        {
-            ByteCodes = bytecodes ?? throw new ArgumentNullException(nameof(bytecodes));
-            IPStack = new Stack<int>();
-            IP = 0;
-        }
+        public int IP { get; private set; } = 0;
 
         public bool EndOfFile => (IP >= ByteCodes.Length);
 

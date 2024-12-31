@@ -25,7 +25,7 @@ namespace SilkPlatforms
             AddFunction(new FunctionInfo("Height", Height, 0, 0));
 
             // Add support variables
-            foreach (KnownColor color in Enum.GetValues(typeof(KnownColor)))
+            foreach (KnownColor color in Enum.GetValues<KnownColor>())
                 AddVariable(new VariableInfo(color.ToString(), (int)color));
         }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -50,13 +50,12 @@ namespace SilkPlatforms
 
         public override void CleanUp()
         {
-            if (Bitmap != null)
-                Bitmap.Dispose();
+            Bitmap?.Dispose();
         }
 
         #region Event handlers
 
-        private void Form_Paint(object sender, PaintEventArgs e)
+        private void Form_Paint(object? sender, PaintEventArgs e)
         {
             e.Graphics.DrawImage(Bitmap, 0, 0, Form!.ClientSize.Width, Form!.ClientSize.Height);
         }

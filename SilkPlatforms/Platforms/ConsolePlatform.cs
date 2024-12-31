@@ -20,7 +20,7 @@ namespace SilkPlatforms
             AddFunction(new FunctionInfo("SetColor", SetColor, 1, 2));
 
             // Add support variables
-            foreach (ConsoleColor color in Enum.GetValues(typeof(ConsoleColor)))
+            foreach (ConsoleColor color in Enum.GetValues<ConsoleColor>())
                 AddVariable(new VariableInfo(color.ToString(), (int)color));
         }
 

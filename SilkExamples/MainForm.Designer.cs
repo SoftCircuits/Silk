@@ -1,7 +1,7 @@
 ﻿
 namespace SilkExamples
 {
-    partial class frmExamples
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -53,7 +53,7 @@ namespace SilkExamples
             this.lstExamples.Name = "lstExamples";
             this.lstExamples.Size = new System.Drawing.Size(216, 274);
             this.lstExamples.TabIndex = 1;
-            this.lstExamples.DoubleClick += new System.EventHandler(this.lstExamples_DoubleClick);
+            this.lstExamples.DoubleClick += new System.EventHandler(this.LstExamples_DoubleClick);
             // 
             // cmdRun
             // 
@@ -63,7 +63,7 @@ namespace SilkExamples
             this.cmdRun.TabIndex = 2;
             this.cmdRun.Text = "&Run";
             this.cmdRun.UseVisualStyleBackColor = true;
-            this.cmdRun.Click += new System.EventHandler(this.cmdRun_Click);
+            this.cmdRun.Click += new System.EventHandler(this.CmdRun_Click);
             // 
             // cmdExit
             // 
@@ -73,7 +73,7 @@ namespace SilkExamples
             this.cmdExit.TabIndex = 3;
             this.cmdExit.Text = "&Exit";
             this.cmdExit.UseVisualStyleBackColor = true;
-            this.cmdExit.Click += new System.EventHandler(this.cmdExit_Click);
+            this.cmdExit.Click += new System.EventHandler(this.CmdExit_Click);
             // 
             // frmExamples
             // 

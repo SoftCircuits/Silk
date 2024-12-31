@@ -91,23 +91,14 @@ namespace SoftCircuits.Silk
     /// <summary>
     /// Represents a user function during compilation.
     /// </summary>
-    internal class CompileTimeUserFunction : UserFunction
+    internal class CompileTimeUserFunction(string name, int ip) : UserFunction(name, ip)
     {
-        public OrderedDictionary<string, Label> Labels { get; set; }
-        public OrderedDictionary<string, Variable> Variables { get; set; }
-        public OrderedDictionary<string, Variable> Parameters { get; set; }
-        public Stack<LoopContext> LoopContexts { get; private set; }
+        public OrderedDictionary<string, Label> Labels { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        public OrderedDictionary<string, Variable> Variables { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        public OrderedDictionary<string, Variable> Parameters { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        public Stack<LoopContext> LoopContexts { get; private set; } = new();
 
         public LoopContext? GetLoopContext() => (LoopContexts.Count > 0) ? LoopContexts.Peek() : null;
-
-        public CompileTimeUserFunction(string name, int ip)
-            : base(name, ip)
-        {
-            Labels = new(StringComparer.OrdinalIgnoreCase);
-            Variables = new(StringComparer.OrdinalIgnoreCase);
-            Parameters = new(StringComparer.OrdinalIgnoreCase);
-            LoopContexts = new();
-        }
 
         /// <summary>
         /// Returns the ID of the local variable or parameter with the given name, or

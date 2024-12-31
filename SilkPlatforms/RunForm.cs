@@ -4,15 +4,17 @@
 using SoftCircuits.Silk;
 using System;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace SilkPlatforms
 {
-    internal partial class frmRun : Form
+    internal partial class RunForm : Form
     {
         private readonly Platform Platform;
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Runtime? Runtime { get; set; }
 
-        public frmRun(Platform platform)
+        public RunForm(Platform platform)
         {
             InitializeComponent();
 
@@ -22,24 +24,24 @@ namespace SilkPlatforms
 
         public void Center() => CenterToScreen();
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool BufferedPainting
         {
             get => DoubleBuffered;
             set => DoubleBuffered = value;
         }
 
-        private void frmRun_Load(object sender, EventArgs e)
+        private void RunForm_Load(object sender, EventArgs e)
         {
             // Show form
             Center();
             Show();
 
             // Run program
-            if (Runtime != null)
-                Runtime.Execute();
+            Runtime?.Execute();
         }
 
-        private void frmRun_FormClosing(object sender, FormClosingEventArgs e)
+        private void RunForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Platform.CleanUp();
         }

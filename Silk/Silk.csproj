@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net7.0;net6.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net9.0;net8.0;net7.0;net6.0;netstandard2.0</TargetFrameworks>
     <Nullable>annotations</Nullable>
     <Nullable Condition="'$(TargetFramework)' != 'netstandard2.0'">enable</Nullable>
-    <LangVersion>default</LangVersion>
+    <LangVersion>latest</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -24,7 +24,7 @@ The Silk language itself is designed to be relatively easy to learn. It has no s
     <Copyright>Copyright © 2019-2024 SoftCircuits</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageReleaseNotes>Added missing XML documentation file; Added direct support for .NET 7 and 8; Removed direct support for now deprecated .NET 5.0; Minor tweaks and enhancements.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added direct support for .NET 9; Updated code for latest language version; Minor tweaks and enhancements.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/SoftCircuits/Silk</RepositoryUrl>
     <PackageIconUrl></PackageIconUrl>
@@ -33,7 +33,7 @@ The Silk language itself is designed to be relatively easy to learn. It has no s
     <PackageId>SoftCircuits.Silk</PackageId>
     <AssemblyVersion>1.5.1.0</AssemblyVersion>
     <FileVersion>1.5.1.0</FileVersion>
-    <Version>1.6.0</Version>
+    <Version>1.7.0</Version>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageIcon>Logo_64x64.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>

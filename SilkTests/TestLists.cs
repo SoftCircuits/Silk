@@ -29,7 +29,7 @@ namespace SilkTests
 
             // Compare lists
             Variable var2 = new(list.Select(x => new Variable(x)));
-            Assert.IsTrue(var.CompareTo(var2) == 0);
+            Assert.AreEqual(0, var.CompareTo(var2));
             Assert.IsTrue(var.Equals(var2));
 
             var.GetAt(4).SetValue(100);
@@ -43,9 +43,9 @@ namespace SilkTests
             // Comparisons
             Assert.IsTrue(var.CompareTo("abc") < 0);
             Assert.IsTrue(var.CompareTo(string.Empty) > 0);
-            Assert.IsTrue(var.CompareTo("1") == 0);
-            Assert.IsTrue(var.CompareTo(1) == 0);
-            Assert.IsTrue(var.CompareTo(1.0) == 0);
+            Assert.AreEqual(0, var.CompareTo("1"));
+            Assert.AreEqual(0, var.CompareTo(1));
+            Assert.AreEqual(0, var.CompareTo(1.0));
 
             Assert.IsTrue(var.IsTrue());
             Assert.IsFalse(var.IsFalse());
@@ -70,12 +70,12 @@ namespace SilkTests
             Variable var = new(Enumerable.Empty<Variable>());
             Variable empty = new();
 
-            Assert.IsTrue(var.CompareTo(empty) == 0);
+            Assert.AreEqual(0, var.CompareTo(empty));
             Assert.IsTrue(var.CompareTo("abc") < 0);
             Assert.IsTrue(var.CompareTo(string.Empty) > 0);
-            Assert.IsTrue(var.CompareTo("0") == 0);
-            Assert.IsTrue(var.CompareTo(0) == 0);
-            Assert.IsTrue(var.CompareTo(0.0) == 0);
+            Assert.AreEqual(0, var.CompareTo("0"));
+            Assert.AreEqual(0, var.CompareTo(0));
+            Assert.AreEqual(0, var.CompareTo(0.0));
 
             Assert.IsFalse(var.IsTrue());
             Assert.IsTrue(var.IsFalse());
@@ -86,9 +86,9 @@ namespace SilkTests
             Assert.IsTrue(var.CompareTo(new Variable(new[] { new Variable(0.0) })) < 0);
 
             // Empty list equal to zero
-            Assert.IsTrue(var.CompareTo(new Variable("0")) == 0);
-            Assert.IsTrue(var.CompareTo(new Variable(0)) == 0);
-            Assert.IsTrue(var.CompareTo(new Variable(0.0)) == 0);
+            Assert.AreEqual(0, var.CompareTo(new Variable("0")));
+            Assert.AreEqual(0, var.CompareTo(new Variable(0)));
+            Assert.AreEqual(0, var.CompareTo(new Variable(0.0)));
         }
 
         [TestMethod]
@@ -100,9 +100,9 @@ namespace SilkTests
             Assert.AreEqual(1, list.Count());
             Assert.AreEqual(123, list.First());
 
-            Assert.IsTrue(var.CompareTo(123) == 0);
+            Assert.AreEqual(0, var.CompareTo(123));
             Assert.IsFalse(var.IsList);
-            Assert.IsTrue(var.GetAt(200).CompareTo(0) == 0);
+            Assert.AreEqual(0, var.GetAt(200).CompareTo(0));
         }
 
         [TestMethod]

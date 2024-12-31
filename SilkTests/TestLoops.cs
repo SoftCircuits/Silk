@@ -11,8 +11,7 @@ namespace SilkTests
     {
         public static readonly ProgramTest[] Tests = new ProgramTest[]
         {
-            new ProgramTest
-            {
+            new() {
                 Description = "For/Break",
                 Result = new(10),
                 Source = @"main()
@@ -26,7 +25,7 @@ namespace SilkTests
     return counter
 }"
             },
-            new ProgramTest
+            new()
             {
                 Description = "For/Continue",
                 Result = new Variable(97),
@@ -41,7 +40,7 @@ namespace SilkTests
     return counter
 }"
             },
-            new ProgramTest
+            new()
             {
                 Description = "For/Continue 2",
                 Result = new Variable(0),
@@ -55,7 +54,7 @@ namespace SilkTests
     return counter
 }"
             },
-            new ProgramTest
+            new()
             {
                 Description = "While/Break",
                 Result = new Variable(10),
@@ -72,7 +71,7 @@ namespace SilkTests
     return counter
 }"
             },
-            new ProgramTest
+            new()
             {
                 Description = "While/Continue",
                 Result = new Variable(97),
@@ -89,7 +88,7 @@ namespace SilkTests
     return counter
 }"
             },
-            new ProgramTest
+            new()
             {
                 Description = "While/Continue 2",
                 Result = new Variable(0),
@@ -105,7 +104,7 @@ namespace SilkTests
     return counter
 }"
             },
-            new ProgramTest
+            new()
             {
                 Description = "For/Nested Break",
                 Result = new Variable(50),
@@ -123,7 +122,7 @@ namespace SilkTests
     return counter
 }"
             },
-            new ProgramTest
+            new()
             {
                 Description = "For/Nested Continue",
                 Result = new Variable(90),
@@ -141,7 +140,7 @@ namespace SilkTests
     return counter
 }"
             },
-            new ProgramTest
+            new()
             {
                 Description = "While/Nested Break",
                 Result = new Variable(50),
@@ -164,7 +163,7 @@ namespace SilkTests
 }"
             },
 
-            new ProgramTest
+            new()
             {
                 Description = "While/Nested Continue",
                 Result = new Variable(90),

@@ -30,39 +30,31 @@ namespace SoftCircuits.Silk
     /// <summary>
     /// Represents the arguments for the <see cref="Runtime.Function"/> event.
     /// </summary>
-    public class FunctionEventArgs : EventArgs
+    /// <remarks>
+    /// Constructs a new <see cref="FunctionEventArgs"/> instance.
+    /// </remarks>
+    /// <param name="name">The function name.</param>
+    /// <param name="parameters">The function parameters.</param>
+    /// <param name="returnValue">Holds the function return value.</param>
+    /// <param name="userData">Optional user data.</param>
+    public class FunctionEventArgs(string name, Variable[] parameters, Variable returnValue, object? userData = null) : EventArgs
     {
         /// <summary>
         /// Gets the function name.
         /// </summary>
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = name;
         /// <summary>
         /// Gets the function parameters.
         /// </summary>
-        public Variable[] Parameters { get; internal set; }
+        public Variable[] Parameters { get; internal set; } = parameters;
         /// <summary>
         /// Holds the function return value.
         /// </summary>
-        public Variable ReturnValue { get; internal set; }
+        public Variable ReturnValue { get; internal set; } = returnValue;
         /// <summary>
         /// Gets or sets user-defined data.
         /// </summary>
-        public object? UserData { get; set; }
-
-        /// <summary>
-        /// Constructs a new <see cref="FunctionEventArgs"/> instance.
-        /// </summary>
-        /// <param name="name">The function name.</param>
-        /// <param name="parameters">The function parameters.</param>
-        /// <param name="returnValue">Holds the function return value.</param>
-        /// <param name="userData">Optional user data.</param>
-        public FunctionEventArgs(string name, Variable[] parameters, Variable returnValue, object? userData = null)
-        {
-            Name = name;
-            Parameters = parameters;
-            ReturnValue = returnValue;
-            UserData = userData;
-        }
+        public object? UserData { get; set; } = userData;
     }
 
     /// <summary>

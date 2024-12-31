@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 //
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 
 namespace SilkPlatforms
 {
@@ -10,17 +11,17 @@ namespace SilkPlatforms
         public readonly List<FunctionInfo> Functions;
         public readonly List<VariableInfo> Variables;
 
-        public frmRun? Form { get; init; }
+        public RunForm? Form { get; init; }
         public string Description { get; init; }
 
         public Platform(SilkPlatform platform)
         {
             Description = RunProgram.GetPlatformDescription(platform);
             if (RequiresForm)
-                Form = new frmRun(this);
+                Form = new RunForm(this);
 
-            Functions = new();
-            Variables = new();
+            Functions = [];
+            Variables = [];
         }
 
         protected void AddFunction(FunctionInfo info) => Functions.Add(info);

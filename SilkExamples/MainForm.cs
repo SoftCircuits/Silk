@@ -12,9 +12,9 @@ using SilkPlatforms;
 
 namespace SilkExamples
 {
-    public partial class frmExamples : Form
+    public partial class MainForm : Form
     {
-        public frmExamples()
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -33,12 +33,12 @@ namespace SilkExamples
                 lstExamples.SelectedIndex = 0;
         }
 
-        private void lstExamples_DoubleClick(object sender, EventArgs e)
+        private void LstExamples_DoubleClick(object sender, EventArgs e)
         {
-            cmdRun_Click(sender, e);
+            CmdRun_Click(sender, e);
         }
 
-        private void cmdRun_Click(object sender, EventArgs e)
+        private void CmdRun_Click(object sender, EventArgs e)
         {
             if (lstExamples.SelectedItem is IExample example)
             {
@@ -57,7 +57,7 @@ namespace SilkExamples
             }
         }
 
-        private void cmdExit_Click(object sender, EventArgs e)
+        private void CmdExit_Click(object sender, EventArgs e)
         {
             Close();
         }

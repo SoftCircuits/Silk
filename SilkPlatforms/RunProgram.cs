@@ -26,7 +26,7 @@ namespace SilkPlatforms
         {
             Platform = GetPlatform(platform);
             FunctionLookup = Platform.Functions.ToDictionary(f => f.Name, f => f.Handler, StringComparer.OrdinalIgnoreCase);
-            Errors = new();
+            Errors = [];
         }
 
         /// <summary>

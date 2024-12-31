@@ -145,13 +145,11 @@ namespace SoftCircuits.Silk
             [ByteCode.AssignListVariableMulti] = r => r.AssignListVariableMulti(),
         };
 
-#pragma warning disable CA1822 // Mark members as static
         private void Nop()
         {
             // Should never be used
             Debug.Assert(false);
         }
-#pragma warning restore CA1822 // Mark members as static
 
         private void ExecFunction()
         {
